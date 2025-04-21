@@ -10,7 +10,7 @@ class Address:
     @property
     def address_id(self):
         return self.__address_id
-        
+
     @property
     def street(self):
         return self.__street
@@ -31,5 +31,5 @@ class Address:
     def country(self):
         return self.__country
 
-    def __str__(self):
+    def get_address(self):
         return f"{self.__street} {self.__house_number}, {self.__zip_code} {self.__city}, {self.__country}"
