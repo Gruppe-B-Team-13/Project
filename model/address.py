@@ -1,11 +1,16 @@
 class Address:
-    def __init__(self, street, house_number, city, zip_code, country):
+    def __init__(self, address_id, street, house_number, city, zip_code, country):
+        self.__address_id = address_id 
         self.__street = street
         self.__house_number = house_number
         self.__city = city
         self.__zip_code = zip_code
         self.__country = country
 
+    @property
+    def address_id(self):
+        return self.__address_id
+        
     @property
     def street(self):
         return self.__street
