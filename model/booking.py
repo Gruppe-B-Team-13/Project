@@ -12,7 +12,6 @@ Class Bookings:
         self.__total_price = []
         self.__guest_name = []
 
-
     @property
     def booking_date(self):
         return self.__booking_date
