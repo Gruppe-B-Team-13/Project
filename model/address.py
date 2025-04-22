@@ -1,6 +1,9 @@
 class Address:
-    def __init__(self, address_id, street, house_number, city, zip_code, country):
-        self.__address_id = address_id 
+    __next_id = 1 
+
+    def __init__(self, street, house_number, city, zip_code, country):
+        self.__address_id = Address.__next_id
+        Address.__next_id += 1 
         self.__street = street
         self.__house_number = house_number
         self.__city = city
@@ -31,5 +34,5 @@ class Address:
     def country(self):
         return self.__country
 
-    def get_address(self):
-        return f"{self.__street} {self.__house_number}, {self.__zip_code} {self.__city}, {self.__country}"
+    def get_address_summary(self):
+        return f"{self.__address_id} - Strasse: {self.__street} {self.__house_number}, {self.__zip_code} {self.__city}, {self.__country}"
