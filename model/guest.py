@@ -37,10 +37,6 @@ class Guests:
         return self.__address
 
     @property
-    def guest_id(self):
-        return self.__guest-id
-
-    @property
     def loyalty_points(self):
         return self.__loyalty_points
 
@@ -52,6 +48,9 @@ class Guests:
             print("Nicht genügend Treuepunkte vorhanden.")
             return
         self.__loyalty_points -= points
+
+    def add_points(self, points):
+        self.__loyalty_points += points
 
     def get_guest_summary(self):
         return f"{self.__guest_id} - Name: {self.__first_name} {self.__last_name} - Email: {self.__email} - Telefonnummer: {self.__phone_number} - Adresse: {self.__address} - Treuepunkte: {self.__loyalty_points}"
