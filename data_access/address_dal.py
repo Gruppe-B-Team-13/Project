@@ -23,6 +23,24 @@ class Address_DAL:
             addresses.append(address)
         return addresses
 
+    def get_address_by_id(self, address_id):
+        cursor = self.connection.cursor()
+        cursor.execute(
+            "SELECT address_id, street, house_number, zip_code, city, country FROM Address WHERE address_id = ?",
+            (address_id,)
+        )
+        row = cursor.fetchone()
+        if row:
+            return Address(
+                address_id=row[0],
+                street=row[1],
+                house_number=row[2],
+                zip_code=row[3],
+                city=row[4],
+                country=row[5]
+            )
+        return None
+
 if __name__ == "__main__":
     dal = Address_DAL()
     for address in dal.get_all_addresses():

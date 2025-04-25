@@ -34,5 +34,8 @@ class Address:
     def country(self):
         return self.__country
 
+    def __str__(self):
+        return f"{self.__street} {self.__house_number}, {self.__zip_code} {self.__city}, {self.__country}"
+
     def get_address_summary(self):
         return f"{self.__address_id} - Strasse: {self.__street} {self.__house_number}, {self.__zip_code} {self.__city}, {self.__country}"
