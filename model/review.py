@@ -28,7 +28,7 @@ class Review:
         return self.__hotel
 
     def __str__(self):
-            return f"{self.__review_id}, {self.__review_stars} Sterne – {self.__review_comment} - {self.__review_date}"
+            return f"{self.__review_id}, {self.__review_stars} Sterne – {self.__review_comment} - {self.__review_date} - Hotel: {self.__hotel}"
 
 
 

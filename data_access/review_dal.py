@@ -6,7 +6,7 @@ from model.hotel import Hotel
 class Review_DAL:
     def __init__(self):
         self.connection = DatabaseConnection().connect()
-        self.hotel_dal = Hotel_DAL()  # Erzeugt Zugriff auf Hotels
+        self.hotel_dal = Hotel_DAL()
 
     def get_all_reviews(self):
         cursor = self.connection.cursor()
@@ -15,8 +15,7 @@ class Review_DAL:
 
         reviews = []
         for row in rows:
-            hotel_id = row[4]
-            hotel = self.hotel_dal.get_hotel_by_id(hotel_id)  # Hotel-Objekt laden
+            hotel = self.hotel_dal.get_hotel_by_id(row[4])
             review = Review(
                 review_id=row[0],
                 review_stars=row[1],

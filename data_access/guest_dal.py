@@ -14,8 +14,7 @@ class Guest_DAL:
 
         guests = []
         for row in rows:
-            address_id = row[4]
-            address = self.address_dal.get_address_by_id(address_id)  # <--- Address-Objekt holen
+            address = self.address_dal.get_address_by_id(row[4])
             guest = Guests(
                 first_name=row[0],
                 last_name=row[1],

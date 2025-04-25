@@ -14,7 +14,7 @@ class Hotel_DAL:
 
         hotels = []
         for row in rows:
-            address = self.address_dal.get_address_by_id(row[2])  # address_id
+            address = self.address_dal.get_address_by_id(row[2])
             hotel = Hotel(
                 hotel_id=row[0],
                 name=row[1],

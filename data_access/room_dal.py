@@ -21,7 +21,7 @@ class Room_DAL:
         for row in rows:
             hotel = self.hotel_dal.get_hotel_by_id(row[3])
             room_type = self.room_type_dal.get_room_type_by_id(row[4])
-            facilities = self.get_facilities_for_room(row[0])  # row[0] = room_id
+            facilities = self.get_facilities_for_room(row[0])
 
             room = Room(
                 room_id=row[0],

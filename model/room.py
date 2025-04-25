@@ -3,8 +3,8 @@ class Room:
         self.__room_id = room_id
         self.__room_number = room_number
         self.__price_per_night = price_per_night
-        self.__hotel = hotel  # Hotel-Objekt
-        self.__room_type = room_type  # RoomType-Objekt
+        self.__hotel = hotel
+        self.__room_type = room_type
         self.__facilities = facilities if facilities is not None else []
 
     @property
