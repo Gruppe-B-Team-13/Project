@@ -1,7 +1,7 @@
 class Address:
     __next_id = 1 
 
-    def __init__(self, street, house_number, city, zip_code, country):
+    def __init__(self, address_id, street, house_number, city, zip_code, country):
         self.__address_id = Address.__next_id
         Address.__next_id += 1 
         self.__street = street

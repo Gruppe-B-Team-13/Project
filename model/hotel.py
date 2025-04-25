@@ -1,5 +1,6 @@
 class Hotel:
-    def __init__(self, name, address, stars):
+    def __init__(self, hotel_id, name, address, stars):
+        self.__hotel_id = hotel_id
         self.__name = name
         self.__address = address
         self.__stars = stars
