@@ -17,3 +17,6 @@ class Hotel:
     @property
     def stars(self):
         return self.__stars
+
+    def __str__(self):
+        return f"{self.__hotel_id}, {self.__name}, {self.__address}, {self.__stars}, {self.__rooms}"
