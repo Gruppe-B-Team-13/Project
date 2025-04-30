@@ -1,4 +1,4 @@
-Class Invoice_manager:
+class Invoice:
    def __init__(self, invoice_number, invoice_date):
         self.__invoice_number = invoice_number
         self.__invoice_date = invoice_date
