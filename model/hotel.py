@@ -1,9 +1,9 @@
 class Hotel:
     def __init__(self, hotel_id, name, address, stars):
         self.__hotel_id = hotel_id
-        self.__name = name
+        self.name = name
         self.__address = address
-        self.__stars = stars
+        self.stars = stars
         self.__rooms = []
 
     @property
@@ -17,6 +17,27 @@ class Hotel:
     @property
     def stars(self):
         return self.__stars
+
+    @name.setter
+    def name(self, name):
+        if name.strip() == "":
+            print("Der Name muss definiert werden.")
+        else:
+            self.__name = name
+
+    @address.setter
+    def address(selfself, address):
+        if address.strip() == "":
+            print("Die Adresse muss definiert werden.")
+        else:
+            self.__address = address
+
+    @stars.setter
+    def stars(self, stars):
+        if stars < 1 or stars > 5:
+            print("Die Bewertung muss zwischen 1 und 5 liegen.")
+        else:
+            self.__stars = stars
 
     def __str__(self):
         return f"{self.__hotel_id}, {self.__name}, {self.__address}, {self.__stars}, {self.__rooms}"
