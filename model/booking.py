@@ -1,11 +1,18 @@
-Class Bookings:
-    def __init__(self, booking_id: int,check_in_date, check_out_date,is_cancelled:bool,total_amount:float, guest, room):
+class Bookings:
+    __next_id = 1
+    def __init__(self, check_in_date, check_out_date, is_cancelled, booking_date, total_amount, room_id, guest, payment_id=None, currency_id=None):
+        self.__booking_id = Bookings.__next_id
+        Bookings.__next_id += 1
         self.__check_in_date = check_in_date
         self.__check_out_date = check_out_date
-        self.is_cancelled = is_cancelled
-        self.total_amout = total_amount
-        self.guest = guest #Link zum "Guest"-Objekt(Hier wird das Objekt der Klasse "Guest" erwartet)
-        self.room = room  #Link zum "Room"-Objekt(Hier wird das Objekt der Klasse "Room" erwartet)
+        self.__is_cancelled = is_cancelled
+        self.__booking_date = booking_date
+        self.__total_amount = total_amount
+        self.__original_total_amount = total_amount
+        self.__room_id = room_id
+        self.__guest = guest
+        self.__payment_id = payment_id
+        self.__currency_id = currency_id
 
     @property
     def booking_id(self):
@@ -13,39 +20,58 @@ Class Bookings:
 
     @property
     def check_in_date(self):
-        return self.check_in_date
+        return self.__check_in_date
 
     @property
     def check_out_date(self):
-        return self.check_out_date
+        return self.__check_out_date
 
     @property
     def is_cancelled(self):
-        return self.is_cancelled
+        return self.__is_cancelled
+
+    @property
+    def booking_date(self):
+        return self.__booking_date
 
     @property
     def total_amount(self):
-        return self.total_amount
-
-    @total_amount.setter
-    def total_amount(self, value:float):
-        if value < 0:
-            raise ValueError("Gesamtkosten können nicht negativ sein.")
-        self.total_amount = value
-
-Class Facilities:
-    def __init__(self, facilities_name, facilities_description):
-        self.__facilities_name = facilities_name
-        self.__facilities_description = facilities_description
-
+        return self.__total_amount
+    
+    @property
+    def original_total_amount(self):
+        return self.__original_total_amount
 
     @property
-    def facilities_name(self):
-        return self.__facilities_name
+    def available_points(self):
+        return self.__guest.loyalty_points
 
     @property
-    def facilities_description(self):
-        return self.__facilities_description
+    def applied_points(self):
+        return min(self.__total_amount, self.available_points)
+
+    @property
+    def room_id(self):
+        return self.__room_id
+
+    @property
+    def guest(self):
+        return self.__guest
+    
+    @property
+    def payment_id(self):
+        return self.__payment_id
+
+    @property
+    def currency_id(self):
+        return self.__currency_id
+
+    def cancel_booking(self):
+        self.__is_cancelled = True
+    
+    def get_booking_summary(self):
+        storniert = "Ja" if self.__is_cancelled else "Nein"
+        return f"Buchung {self.__booking_id}: {self.__guest.get_full_name()} - {self.__check_in_date} bis {self.__check_out_date} - Zimmer {self.__room_id} - Betrag: CHF {self.__total_amount} - Storniert: {storniert}"
     
     def apply_loyalty_points_from_guest(self):
         if self.applied_points <= 0:
