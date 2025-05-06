@@ -90,7 +90,7 @@ class Guests:
             f"  Treuepunkte: {self.__loyalty_points}"
         )
 
-   def get_full_name(self):
+    def get_full_name(self):
         return f"{self.__first_name} {self.__last_name}"
 
     def deduct_points(self, points):
