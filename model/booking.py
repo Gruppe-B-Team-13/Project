@@ -127,6 +127,7 @@ class Bookings:
             f"  Zeitraum: {self.__check_in_date} bis {self.__check_out_date}\n"
             f"  Betrag:   CHF {self.__total_amount:.2f}\n"
             f"  Storniert: {storniert}"
+        )
 
     def cancel_booking(self):
         self.__is_cancelled = True
