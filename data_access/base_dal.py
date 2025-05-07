@@ -1,6 +1,5 @@
 import os
 from contextlib import closing
-
 import sqlite3
 
 

@@ -1,8 +1,8 @@
 # address_dal.py
-from data_access.base_dal import BaseDal
+from data_access.base_dal import BaseDataAccess
 from model.address import Address
 
-class Address_DAL(BaseDal):
+class Address_DAL(BaseDataAccess):
     def get_all_addresses(self) -> list[Address]:
         sql = "SELECT address_id, street, house_number, zip_code, city, country FROM Address"
         rows = self.fetchall(sql)
