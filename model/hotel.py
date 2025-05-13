@@ -61,3 +61,12 @@ class Hotel:
             f"({self.__stars} Sterne) – {self.__address}, "
             f"{len(self.__rooms)} Zimmer"
         )
+
+    def get_hotel_summary(self) -> str:
+        address_str = str(self.address)
+        return (
+            f"Hotel {self.hotel_id}: {self.name} "
+            f"({self.stars} Sterne)\n"
+            f"Adresse: {address_str}\n"
+            f"Anzahl Zimmer: {len(self.rooms)}"
+        )

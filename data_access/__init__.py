@@ -5,6 +5,7 @@ import shutil
 
 from data_access.base_dal import BaseDataAccess
 from data_access.hotel_dal import Hotel_DAL
+from data_access.address_dal import Address_DAL
 
 def date_to_db(d: date) -> str:
     return d.isoformat()

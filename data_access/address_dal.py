@@ -1,30 +1,33 @@
-# address_dal.py
 from data_access.base_dal import BaseDataAccess
-from model.address import Address
+from data_access.address_dal import Address_DAL
+import model
 
-class Address_DAL(BaseDataAccess):
-    def get_all_addresses(self) -> list[Address]:
-        sql = "SELECT address_id, street, house_number, zip_code, city, country FROM Address"
-        rows = self.fetchall(sql)
-        return [
-            Address(
-                address_id=row[0],
-                street=row[1],
-                house_number=row[2],
-                zip_code=row[3],
-                city=row[4],
-                country=row[5]
-            ) for row in rows
-        ]
+class Hotel_DAL(BaseDataAccess):
+    def __init__(self, db_path: str = None):
+        super().__init__(db_path)
+        self._address_dal = Address_DAL(db_path)   
+    
+    def get_hotel_by_id(self, hotel_id: int) -> model.Hotel | None:
+            if hotel_id is None:
+                raise ValueError("hotel_id darf nicht None sein.")
 
-    def get_address_by_id(self, address_id: int) -> model.Address | None:
-        sql = """
-            SELECT address_id, street, house_number, zip_code, city, country FROM Address WHERE address_id = ?
+            sql = """
+                SELECT hotel_id, name, stars, address_id
+                FROM   Hotel
+                WHERE  hotel_id = ?
             """
-        params = tuple([address_id])
-        result = self.fetchone(sql, params)
-        if result:
-            address_id, street, house_number, zip_code, city, country = result
-            return model.Address(address_id, street, house_number, zip_code, city, country)
-        else:
-            return None
+            row = self.fetchone(sql, (hotel_id,))
+            if row is None:
+                return None
+
+            hotel_id, name, stars, address_id = row
+            address = self._address_dal.get_address_by_id(address_id)
+
+            if address is None:
+                raise ValueError("Fehler: Keine Adresse gefunden.")
+            return model.Hotel(
+                hotel_id=hotel_id,
+                name=name,
+                address=address,
+                stars=stars
+            )
