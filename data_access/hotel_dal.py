@@ -16,21 +16,14 @@ class Hotel_DAL(BaseDataAccess):
             FROM   Hotel
             WHERE  hotel_id = ?
         """
-        row = self.fetchone(sql, (hotel_id,))
-        if row is None:
+        params = tuple([hotel_id])
+        result = self.fetchone(sql, params)
+        if result:
+            hotel_id, name, stars, address_id = result
+            address = self._address_dal.get_address_by_id(address_id)
+            return model.Hotel(hotel_id, name, address, stars)
+        else:
             return None
-
-        hotel_id, name, stars, address_id = row
-        address = self._address_dal.get_address_by_id(address_id)
-
-        if address is None:
-            raise ValueError("Fehler: Keine Adresse gefunden.")
-        return model.Hotel(
-            hotel_id=hotel_id,
-            name=name,
-            address=address,
-            stars=stars
-        )
     
     def get_hotels_by_city(self, city: str) -> list[model.Hotel]:
         if not city or not city.strip():
@@ -46,23 +39,22 @@ class Hotel_DAL(BaseDataAccess):
             ON   Hotel.address_id = Address.address_id
             WHERE  Address.city = ?
         """
-        rows = self.fetchall(sql, (city.strip(),))
+        params = tuple([city])
+        result = self.fetchall(sql, (params))
         hotels: list[model.Hotel] = []
         
-        for hotel_id, name, stars, address_id in rows:
+        for hotel_id, name, stars, address_id in result:
             address = self._address_dal.get_address_by_id(address_id)
-            hotels.append(model.Hotel(
-                hotel_id=hotel_id,
-                name=name,
-                address=address,
-                stars=stars
-            ))
+            hotels.append(model.Hotel(hotel_id, name, address, stars)
+            )
         
         return hotels
 
-    def get_hotels_by_city and stars(self, city: str) -> list[model.Hotel]:
+    def get_hotels_by_city_and_stars(self, city: str, stars: int) -> list[model.Hotel]:
         if not city or not city.strip():
             raise ValueError("Stadt darf nicht leer sein.")
+        if stars < 1 or stars > 5:
+            raise ValueError("Anzahl Sterne muss zwischen 1 und 5 liegen.")
         
         sql = """
             SELECT Hotel.hotel_id,
@@ -72,18 +64,15 @@ class Hotel_DAL(BaseDataAccess):
             FROM   Hotel
             JOIN   Address
             ON   Hotel.address_id = Address.address_id
-            WHERE  Address.city = ?
+            WHERE  Address.city = ? AND Hotel.stars >= ?
         """
-        rows = self.fetchall(sql, (city.strip(),))
+        params = tuple([city, stars])
+        result = self.fetchall(sql, (params))
         hotels: list[model.Hotel] = []
         
-        for hotel_id, name, stars, address_id in rows:
+        for hotel_id, name, stars, address_id in result:
             address = self._address_dal.get_address_by_id(address_id)
-            hotels.append(model.Hotel(
-                hotel_id=hotel_id,
-                name=name,
-                address=address,
-                stars=stars
-            ))
+            hotels.append(model.Hotel(hotel_id, name, address, stars)
+            )
         
         return hotels

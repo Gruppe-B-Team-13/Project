@@ -62,6 +62,13 @@ class Hotel:
             f"{len(self.__rooms)} Zimmer"
         )
 
+    def __repr__(self):
+        return (
+            f"Hotel {self.__hotel_id}: {self.__name} "
+            f"({self.__stars} Sterne) – {self.__address}, "
+            f"{len(self.__rooms)} Zimmer"
+        )
+
     def get_hotel_summary(self) -> str:
         address_str = str(self.address)
         return (
