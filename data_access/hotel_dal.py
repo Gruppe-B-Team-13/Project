@@ -17,3 +17,15 @@ class Hotel_DAL(BaseDataAccess):
             return model.Hotel(hotel_id, name)
         else:
             return None
+
+    def read_all_hotels(self) -> list[model.Hotel]:
+        sql = """
+        SELECT hotel_id, Name, stars, address_id FROM hotel
+        """
+        results = self.fetchall(sql)
+        
+        hotels = []
+        for hotel_id, name, stars, address_id in results:
+            hotel.append(model.Hotel(hotel_id=hotel_id, name=name))
+
+        return hotels

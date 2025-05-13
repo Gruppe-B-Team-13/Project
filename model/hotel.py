@@ -1,3 +1,5 @@
+from .address import Address
+
 class Hotel:
     def __init__(self, hotel_id: int, name, address, stars):
         self.hotel_id = hotel_id
