@@ -1,48 +1,68 @@
-from data_access.base_dal import DatabaseConnection
+from data_access.base_dal import BaseDataAccess
 from data_access.hotel_dal import Hotel_DAL
 from data_access.room_type_dal import RoomType_DAL
+from data_access.address_dal import Address_DAL
 from model.room import Room
-from data_access.facilities_dal import Facility_DAL
+from model.hotel import Hotel
 
 
-class Room_DAL:
-    def __init__(self):
-        self.connection = DatabaseConnection().connect()
-        self.hotel_dal = Hotel_DAL()
-        self.room_type_dal = RoomType_DAL()
-        self.facility_dal = Facility_DAL()
+class Room_DAL(BaseDataAccess):
+    def __init__(self, db_path: str = None):
+        super().__init__(db_path)
+        self._hotel_dal = Hotel_DAL(db_path)
+        self.room_type_dal = RoomType_DAL(db_path)
+        self._address_dal    = Address_DAL(db_path)
 
-    def get_all_rooms(self):
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT room_id, room_number, price_per_night, hotel_id, room_type_id FROM Room")
-        rows = cursor.fetchall()
+    def get_room_by_id(self, room_id: int) -> Room | None:
+        if room_id is None:
+            raise ValueError("room_id darf nicht None sein.")
 
-        rooms = []
-        for row in rows:
-            hotel = self.hotel_dal.get_hotel_by_id(row[3])
-            room_type = self.room_type_dal.get_room_type_by_id(row[4])
-            facilities = self.get_facilities_for_room(row[0])
+        sql = """
+            SELECT Room.room_id, Room.hotel_id, Room.room_number, Room.room_type_id, Room.price_per_night
+            FROM   Room
+            WHERE  Room.room_id = ?
+        """
+        params = tuple([room_id])
+        result = self.fetchone(sql, params)
+        if result:
+            room_id, hotel_id, room_number, room_type_id, price_per_night = result
+            hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
+            room_type = self.room_type_dal.get_room_type_by_id(room_type_id)
+            return model.Room(room_id, room_number, price_per_night, hotel, room_type)
+        else:
+            return None
 
-            room = Room(
-                room_id=row[0],
-                room_number=row[1],
-                price_per_night=row[2],
-                hotel=hotel,
-                room_type=room_type,
-                facilities=facilities
+
+    def get_rooms_by_city_and_capacity(self, city: str, capacity: int) -> list[Room]:
+        if not city or not city.strip():
+            raise ValueError("Stadt darf nicht leer sein.")
+        if capacity < 1:
+            raise ValueError("Kapazität kann nicht null sein.")
+        
+        sql = """
+            SELECT Room.room_id,
+                Room.hotel_id,
+                Room.room_number,
+                Room.room_type_id,
+                Room.price_per_night
+            FROM   Room
+            JOIN   Hotel
+            ON   Room.hotel_id = Hotel.hotel_id
+            JOIN   Address
+            ON   Hotel.address_id = Address.address_id
+            JOIN Room_Type
+            ON Room.room_type_id = Room_Type.room_type_id
+            WHERE  Address.city = ? AND Room_Type.max_guests >= ?
+        """
+        params = tuple([city, capacity])
+        result = self.fetchall(sql, (params))
+        rooms: list[model.Rooms] = []
+        
+        for room_id, hotel_id, room_number, room_type_id, price_per_night in result:
+            room_type = self.room_type_dal.get_room_type_by_id(room_type_id)
+            hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
+            rooms.append(Room(room_id, room_number, price_per_night, hotel, room_type)
             )
 
-            rooms.append(room)
         return rooms
 
-    def get_facilities_for_room(self, room_id):
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT facility_id FROM Room_Facilities WHERE room_id = ?", (room_id,))
-        rows = cursor.fetchall()
-        return [self.facility_dal.get_facility_by_id(row[0]) for row in rows]
-
-
-if __name__ == "__main__":
-    dal = Room_DAL()
-    for room in dal.get_all_rooms():
-        print(room)

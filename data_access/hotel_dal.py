@@ -12,7 +12,7 @@ class Hotel_DAL(BaseDataAccess):
             raise ValueError("hotel_id darf nicht None sein.")
 
         sql = """
-            SELECT hotel_id, name, stars, address_id
+            SELECT Hotel.hotel_id, Hotel.name, Hotel.stars, Hotel.address_id
             FROM   Hotel
             WHERE  hotel_id = ?
         """

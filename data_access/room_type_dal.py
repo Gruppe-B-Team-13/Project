@@ -1,32 +1,23 @@
-from data_access.base_dal import DatabaseConnection
+from data_access.base_dal import BaseDataAccess
 from model.room_type import RoomType
 
-class RoomType_DAL:
-    def __init__(self):
-        self.connection = DatabaseConnection().connect()
+class RoomType_DAL(BaseDataAccess):
+    def __init__(self, db_path: str = None):
+        super().__init__(db_path)
 
-    def get_room_type_by_id(self, room_type_id):
-        cursor = self.connection.cursor()
-        cursor.execute("""
-            SELECT room_type_id, room_type_name, description, max_guests 
-            FROM Room_type 
-            WHERE room_type_id = ?
-        """, (room_type_id,))
-        row = cursor.fetchone()
-        if row:
-            return RoomType(
-                room_type_id=row[0],
-                room_type_name=row[1],
-                description=row[2],
-                max_guests=row[3]
-            )
-        return None
+    def get_room_type_by_id(self, room_type_id: int) -> RoomType | None:
+        if room_type_id is None:
+            raise ValueError("room_type_id darf nicht None sein.")
 
-    def get_all_room_types(self):
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT room_type_id, room_type_name, description, max_guests FROM Room_type")
-        rows = cursor.fetchall()
-        return [
-            RoomType(room_type_id=r[0], room_type_name=r[1], description=r[2], max_guests=r[3])
-            for r in rows
-        ]
+        sql = """
+            SELECT Room_Type.room_type_id, Room_Type.description, Room_Type.max_guests, Room_Type.room_type_name
+            FROM   Room_Type
+            WHERE  Room_Type.room_type_id = ?
+        """
+        params = tuple([room_type_id])
+        result = self.fetchone(sql, params)
+        if result:
+            room_type_id, description, max_guests, room_type_name = result
+            return RoomType(room_type_id, description, max_guests, room_type_name)
+        else:
+            return None

@@ -1,3 +1,11 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from model.hotel     import Hotel
+    from model.room_type import RoomType
+    from model.facility  import Facility
+
 class Room:
     def __init__(self, room_id, room_number, price_per_night, hotel, room_type, facilities=None):
         self.room_id = room_id
@@ -51,12 +59,14 @@ class Room:
 
     @hotel.setter
     def hotel(self, value):
+        from model.hotel import Hotel
         if not isinstance(value, Hotel):
             raise TypeError("Das Hotel muss ein Objekt der Klasse Hotel sein.")
         self.__hotel = value
 
     @room_type.setter
     def room_type(self, value):
+        from model.room_type import RoomType
         if not isinstance(value, RoomType):
             raise TypeError("Der Zimmertyp muss ein Objekt der Klasse RoomType sein.")
         self.__room_type = value
@@ -80,3 +90,11 @@ class Room:
             f"Preis: {self.__price_per_night:.2f} CHF, Hotel: {self.__hotel.name}, "
             f"Ausstattung: [{facilities_str}]"
         )
+    def get_room_summary(self) -> str:
+        return (
+            f"{self.room_type.room_type_name} im {self.hotel.name} "
+            f"({self.hotel.address.city}), "
+            f"Kapazität: {self.room_type.max_guests}, "
+            f"Preis/Nacht: {self.price_per_night:.2f} CHF"
+        )
+

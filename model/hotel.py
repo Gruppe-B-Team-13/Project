@@ -1,4 +1,10 @@
-from .address import Address
+from __future__ import annotations
+from typing import TYPE_CHECKING
+from model.address import Address
+
+if TYPE_CHECKING:
+    from model.room import Room
+
 
 class Hotel:
     def __init__(self, hotel_id: int, name, address, stars):
@@ -51,6 +57,7 @@ class Hotel:
         self.__stars = value
 
     def add_room(self, room):
+        from model.room import Room
         if not isinstance(room, Room):
             raise TypeError("Es kann nur ein Objekt der Klasse Room hinzugefügt werden.")
         self.__rooms.append(room)

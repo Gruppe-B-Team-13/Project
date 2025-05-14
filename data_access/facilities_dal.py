@@ -1,7 +1,7 @@
-from data_access.base_dal import DatabaseConnection
+from data_access.base_dal import BaseDataAccess
 from model.facilities import Facility
 
-class Facilities_DAL:
+class Facilities_DAL(BaseDataAccess):
     def __init__(self):
         self.connection = DatabaseConnection().connect()
 

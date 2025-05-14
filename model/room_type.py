@@ -1,5 +1,5 @@
 class RoomType:
-    def __init__(self, room_type_id, room_type_name, description, max_guests):
+    def __init__(self, room_type_id, description, max_guests,room_type_name):
         self.room_type_id = room_type_id
         self.room_type_name = room_type_name
         self.description = description
