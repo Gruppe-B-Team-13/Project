@@ -1,27 +1,33 @@
+from datetime import date
+from model.invoice import Invoice
+
 class InvoiceManager:
-    def __init__(self):
-        self__invoices = []
+    def __init__(self, invoice_dal):
+        self.invoice_dal = invoice_dal
 
-    def add_invoice(self, invoice: Invoice):
-        self__invoices.append(invoice)
+    def create_invoice_from_booking(self, booking) -> int:
+        """
+        Erstellt eine Rechnung aus einer Buchung, falls das Check-out-Datum erreicht ist.
+        Gibt die erzeugte invoice_id zurück.
+        """
+        if date.today() < booking.check_out_date:
+            raise ValueError("Rechnung kann erst nach Check-out erstellt werden.")
 
-    def remove_invoice_number(self, invoice_number):
-        self__invoices = [inv for inv in self._invoices if inv.invoice_number != invoice_number]
+        invoice = Invoice(
+            invoice_id=None,
+            booking=booking,                # ✅ jetzt korrekt: ganzes Objekt
+            issue_date=date.today()
+        )
+        return self.invoice_dal.add_invoice(invoice)
 
+    def get_invoice_by_id(self, invoice_id: int):
+        return self.invoice_dal.get_invoice_by_id(invoice_id)
 
     def get_all_invoices(self):
-        return self.__invoices
+        return self.invoice_dal.get_all_invoices()
 
-    def find_by_number(self, invoice_number):
-        for inv in self__invoices:
-            if inv.invoice_number == invoice_number:
-                return inv
-        return None
+    def get_invoices_by_guest(self, guest_id: int):
+        return self.invoice_dal.get_invoices_by_guest(guest_id)
 
-
-    def find_by_date(self,date):
-        return [inv for inv in self__invoices if inv.date == date]
-
-    def print_all_invoices(self):
-        for inv in slef._invoices
-            print(f"Rechnungsnummer: {inv.invoice_number}, Rechnungsatum: {inv.invoice_date}")
+    def delete_invoice(self, invoice_id: int) -> bool:
+        return self.invoice_dal.remove_invoice_by_id(invoice_id)
