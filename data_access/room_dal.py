@@ -1,15 +1,15 @@
 from data_access.base_dal import BaseDataAccess
 import model
-
+import data_access
 
 
 
 class Room_DAL(BaseDataAccess):
     def __init__(self, db_path: str = None):
         super().__init__(db_path)
-        self._hotel_dal = Hotel_DAL(db_path)
-        self.room_type_dal = RoomType_DAL(db_path)
-        self._address_dal    = Address_DAL(db_path)
+        self._hotel_dal = data_access.Hotel_DAL(db_path)
+        self._room_type_dal = data_access.RoomType_DAL(db_path)
+        self._address_dal = data_access.Address_DAL(db_path)
 
     def get_room_by_id(self, room_id: int) -> model.Room | None:
         if room_id is None:
@@ -27,7 +27,7 @@ class Room_DAL(BaseDataAccess):
         if result:
             room_id, hotel_id, room_number, room_type_id, price_per_night = result
             hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
-            room_type = self.room_type_dal.get_room_type_by_id(room_type_id)
+            room_type = self._room_type_dal.get_room_type_by_id(room_type_id)
             return Room(room_id, room_number, price_per_night, hotel, room_type)
         else:
             return None
@@ -60,8 +60,8 @@ class Room_DAL(BaseDataAccess):
         rooms: list[Room] = []     
 
         for room_id, hotel_id, room_number, room_type_id, price_per_night in result:
-            room_type = self.room_type_dal.get_room_type_by_id(room_type_id)
             hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
+            room_type = self._room_type_dal.get_room_type_by_id(room_type_id)
             rooms.append(Room(room_id, room_number, price_per_night, hotel, room_type))
         return rooms
 
@@ -96,7 +96,7 @@ class Room_DAL(BaseDataAccess):
 
             if room_id not in rooms_dict:
                 hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
-                room_type = self.room_type_dal.get_room_type_by_id(room_type_id)
+                room_type = self._room_type_dal.get_room_type_by_id(room_type_id)
                 rooms_dict[room_id] = Room(
                     room_id, room_number, price_per_night, hotel, room_type, facilities=[]
                     )
@@ -140,7 +140,7 @@ class Room_DAL(BaseDataAccess):
 
         for room_id, room_number, price_per_night, hotel_id, room_type_id in results:
             hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
-            room_type = self.room_type_dal.get_room_type_by_id(room_type_id)
+            room_type = self._room_type_dal.get_room_type_by_id(room_type_id)
             rooms.append(Room(room_id, room_number, price_per_night, hotel, room_type))
 
         return rooms
@@ -190,11 +190,11 @@ class Room_DAL(BaseDataAccess):
         sql += " ORDER BY Room.price_per_night ASC, Hotel.stars DESC"
 
         results = self.fetchall(sql, (params))
-        rooms: list[Room] = []
+        rooms: list[model.Room] = []
 
         for room_id, room_number, price_per_night, hotel_id, room_type_id in results:
             hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
-            room_type = self.room_type_dal.get_room_type_by_id(room_type_id)
-            rooms.append(Room(room_id, room_number, price_per_night, hotel, room_type))
+            room_type = self._room_type_dal.get_room_type_by_id(room_type_id)
+            rooms.append(model.Room(room_id, room_number, price_per_night, hotel, room_type))
 
         return rooms

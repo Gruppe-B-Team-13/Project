@@ -13,6 +13,6 @@ class Address_DAL(BaseDataAccess):
         result = self.fetchone(sql, params)
         if result:
             address_id, street, house_number, zip_code, city, country = result
-            return Address(address_id, street, house_number, zip_code, city, country)
+            return Address(address_id, street, house_number, city, zip_code, country)
         else:
             return None
