@@ -140,3 +140,16 @@ class Hotel_DAL(BaseDataAccess):
             hotels.append(model.Hotel(hotel_id, name, address, stars))
 
         return hotels
+
+    def get_all_hotels(self) -> list[model.Hotel]:
+        sql = """
+            SELECT hotel_id, name, stars, address_id
+            FROM Hotel
+            ORDER BY stars DESC, name ASC
+        """
+        results = self.fetchall(sql)
+        hotels = []
+        for hotel_id, name, stars, address_id in results:
+            address = self._address_dal.get_address_by_id(address_id)
+            hotels.append(model.Hotel(hotel_id, name, address, stars))
+        return hotels

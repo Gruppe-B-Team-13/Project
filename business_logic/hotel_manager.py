@@ -23,3 +23,15 @@ class HotelManager:
             return
         for hotel in hotels:
             print(f"{hotel.name} ({hotel.stars} Sterne) - {hotel.address.city}")
+
+    def print_all_hotels(self):
+        hotels = self.hotel_dal.get_all_hotels()
+        if not hotels:
+            print("Keine Hotels vorhanden.")
+            return
+
+        for hotel in hotels:
+            addr = hotel.address
+            print(f"{hotel.name} ({hotel.stars} Sterne)")
+            print(f"{addr.street} {addr.house_number}, {addr.zip_code} {addr.city}, {addr.country}")
+            print("-" * 40)
