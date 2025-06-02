@@ -1,11 +1,11 @@
-from models.address import Address #Import der Klasse, da in einem eigenen Modul gespeichert
+import model
 
-Class address.manager
+class AddressManager:
 
     def __init__(self):
         self.__address = address
 
-    def add_address(self, address: Address):
+    def add_address(self, address: model.Address):
         self._addresses.append(address)
 
     def get_alladdresses(self):
@@ -19,7 +19,7 @@ Class address.manager
     def find_by_country(self, country:str):
         return[addr for addr in self._addresses if addr.country.lower() == country.lower()]
 
-    def remove_address(self, address: Address):
+    def remove_address(self, address: model.Address):
         try:
             self._addresses.remove(address)
             return True

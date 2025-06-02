@@ -1,11 +1,13 @@
+import model
+
 class BookingManager:
     def __init__(self):
         self.__bookings = []
 
-    def add_booking(self, booking: Booking):
+    def add_booking(self, booking: model.Booking):
         self.__bookings.append(booking)
 
-    def remove_booking(self, booking: Booking):
+    def remove_booking(self, booking: model.Booking):
         self.__bookings = [b for b in self.__bookings if b.booking_id != booking_id]
 
     def get_all_bookings(self):

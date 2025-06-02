@@ -1,14 +1,14 @@
 # data_access/booking_dal.py
 
 from data_access.base_dal import BaseDataAccess
-from model.booking import Booking
+import model
 from datetime import date
 
 class Booking_DAL(BaseDataAccess):
     def __init__(self, db_path: str = None):
         super().__init__(db_path)
 
-    def add_booking(self, booking: Booking) -> int:
+    def add_booking(self, booking: model.Booking) -> int:
         sql = """
             INSERT INTO Booking (guest_id, room_id, check_in_date, check_out_date, is_cancelled)
             VALUES (?, ?, ?, ?, ?)
@@ -23,7 +23,7 @@ class Booking_DAL(BaseDataAccess):
         lastrowid, _ = self.execute(sql, params)
         return lastrowid
 
-    def get_booking_by_id(self, booking_id: int) -> Booking | None:
+    def get_booking_by_id(self, booking_id: int) -> model.Booking | None:
         sql = """
             SELECT booking_id, guest_id, room_id, check_in_date, check_out_date, is_cancelled
             FROM Booking
@@ -42,7 +42,7 @@ class Booking_DAL(BaseDataAccess):
             )
         return None
 
-    def get_bookings_by_guest(self, guest_id: int) -> list[Booking]:
+    def get_bookings_by_guest(self, guest_id: int) -> list[model.Booking]:
         sql = """
             SELECT booking_id, guest_id, room_id, check_in_date, check_out_date, is_cancelled
             FROM Booking
@@ -54,7 +54,7 @@ class Booking_DAL(BaseDataAccess):
             for bid, gid, rid, checkin, checkout, cancelled in results
         ]
 
-    def get_all_bookings(self) -> list[Booking]:
+    def get_all_bookings(self) -> list[model.Booking]:
         sql = "SELECT booking_id, guest_id, room_id, check_in_date, check_out_date, is_cancelled FROM Booking"
         results = self.fetchall(sql)
         return [

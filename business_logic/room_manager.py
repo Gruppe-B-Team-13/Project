@@ -1,5 +1,9 @@
+import os
+import model
+import data_access
+
 class RoomManager:
-    def __init__(self, room_dal):
+    def __init__(self):
         self.room_dal = room_dal
 
     def get_all_rooms_with_facilities(self) -> list[str]:
@@ -21,3 +25,14 @@ class RoomManager:
             result.append(room_info)
 
         return result
+
+    def get_filtered_rooms(self, city: str = None, min_stars: int = None, min_guests: int = None) -> list[model.Room]:
+        return self.room_dal.get_rooms_filtered(city, min_stars, min_guests)
+
+    def print_filtered_rooms(self, city: str = None, min_stars: int = None, min_guests: int = None):
+        rooms = self.get_filtered_rooms(city, min_stars, min_guests)
+        if not rooms:
+            print("Keine Zimmer gefunden.")
+            return
+        for room in rooms:
+            print(room.get_room_summary())

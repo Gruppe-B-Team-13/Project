@@ -1,10 +1,10 @@
-from models.guests import guests
+import model
 
 class GuestManager:
     def __init__(self):
-        self.__ guests = []
+        self.__guests = []
 
-    def add_guest(self, guest: Guests):
+    def add_guest(self, guest: model.Guests):
         self.__guests.append(guest)
 
     def remove_guest_byid(self, guest_id: int):
@@ -34,7 +34,7 @@ class GuestManager:
         return False
 
 
-    def find_by_email(self, email: srt):
+    def find_by_email(self, email: str):
         return [g for g in self._guests if g.email.lower() == email.lower()]
 
     def find_by_name(self, name: str):

@@ -1,6 +1,6 @@
 from datetime import date
 
-class Bookings:
+class Booking:
     def __init__(self, booking_id, check_in_date, check_out_date, booking_date, total_amount, room, guest, is_cancelled=False):
         self.booking_id = booking_id
         self.check_in_date = check_in_date

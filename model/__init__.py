@@ -1,5 +1,5 @@
 from .address import Address
-from .booking import Bookings
+from .booking import Booking
 from .facilities import Facility
 from .guest import Guests
 from .hotel import Hotel

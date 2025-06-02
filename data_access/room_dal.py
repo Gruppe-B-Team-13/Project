@@ -149,3 +149,57 @@ class Room_DAL(BaseDataAccess):
             rooms.append(Room(room_id, room_number, price_per_night, hotel, room_type))
 
         return rooms
+
+    def get_rooms_filtered(self, city:str = None, min_stars:int = None, min_guests:int = None) -> list[Room]:
+
+        if min_stars is not None and min_stars < 1:
+            raise ValueError("Mindestanzahl an Sternen muss mindestens 1 sein.")
+        if min_guests is not None and min_guests < 1:
+            raise ValueError("Mindestanzahl an Kunden muss mindestens 1 sein.")
+        if city and not city.strip():
+            raise ValueError("Stadt darf nicht leer sein.")
+
+        sql = """
+            SELECT Room.room_id, 
+                Room.room_number,
+                Room.price_per_night, 
+                Room.hotel_id, 
+                Room.room_type_id
+            FROM Room 
+
+            JOIN Hotel  
+            ON Room.hotel_id = Hotel.hotel_id
+
+            JOIN Address 
+            ON Hotel.address_id = Address.address_id
+
+            JOIN Room_Type
+            ON Room.room_type_id = Room_Type.room_type_id
+            
+            WHERE 1 = 1
+        """
+        params = []
+
+        if city:
+            sql += " AND Address.city = ?"
+            params.append(city)
+
+        if min_stars is not None:
+            sql += " AND Hotel.stars >= ?"
+            params.append(min_stars)
+
+        if min_guests is not None:
+            sql += " AND Room_Type.max_guests >= ?"
+            params.append(min_guests)
+
+        sql += " ORDER BY Room.price_per_night ASC, Hotel.stars DESC"
+
+        results = self.fetchall(sql, (params))
+        rooms: list[Room] = []
+
+        for room_id, room_number, price_per_night, hotel_id, room_type_id in results:
+            hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
+            room_type = self.room_type_dal.get_room_type_by_id(room_type_id)
+            rooms.append(Room(room_id, room_number, price_per_night, hotel, room_type))
+
+        return rooms
