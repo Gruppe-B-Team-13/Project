@@ -37,3 +37,24 @@ class RoomManager:
             return
         for room in rooms:
             print(room.get_room_summary())
+
+    
+    def print_all_rooms(self, nights: int = 1):
+        rooms = self.room_dal.get_all_rooms_with_facilities()
+        if not rooms:
+            print("Keine Zimmer gefunden.")
+            return
+
+        for room in rooms:
+            print(f"Zimmertyp: {room.room_type.room_type_name}")
+            print(f"Max. Gäste: {room.room_type.max_guests}")
+            print(f"Beschreibung: {room.room_type.description}")
+            
+            if room.facilities:
+                ausstattung = ", ".join(f.facility_name for f in room.facilities)
+                print(f"Ausstattung: {ausstattung}")
+            else:
+                print("Ausstattung: keine")
+
+            print(f"Preis/Nacht: {room.price_per_night:.2f} CHF")
+            print("-" * 40)

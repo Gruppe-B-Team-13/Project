@@ -198,3 +198,34 @@ class Room_DAL(BaseDataAccess):
             rooms.append(model.Room(room_id, room_number, price_per_night, hotel, room_type))
 
         return rooms
+
+    def get_all_rooms_with_facilities(self) -> list[model.Room]:
+        sql = """
+            SELECT
+                Room.room_id,
+                Room.room_number,
+                Room.price_per_night,
+                Room.hotel_id,
+                Room.room_type_id,
+                Facilities.facility_id,
+                Facilities.facility_name
+            FROM Room
+            LEFT JOIN Room_Type ON Room_Type.room_type_id = Room.room_type_id
+            LEFT JOIN Room_Facilities ON Room.room_id = Room_Facilities.room_id
+            LEFT JOIN Facilities ON Room_Facilities.facility_id = Facilities.facility_id
+        """
+        results = self.fetchall(sql)
+        rooms_dict = {}
+
+        for room_id, room_number, price_per_night, hotel_id, room_type_id, facility_id, facility_name in results:
+            if room_id not in rooms_dict:
+                hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
+                room_type = self._room_type_dal.get_room_type_by_id(room_type_id)
+                rooms_dict[room_id] = model.Room(
+                    room_id, room_number, price_per_night, hotel, room_type, facilities=[]
+                )
+
+            if facility_id and facility_name:
+                rooms_dict[room_id].facilities.append(model.Facility(facility_id, facility_name))
+
+        return list(rooms_dict.values())
