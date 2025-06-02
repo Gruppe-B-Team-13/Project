@@ -1,8 +1,9 @@
 import model
+import data_access
 
 class GuestManager:
     def __init__(self):
-        self.__guests = []
+        self.__guest_dal = data_access.Guest_DAL()
 
     def add_guest(self, guest: model.Guests):
         self.__guests.append(guest)

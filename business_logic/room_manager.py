@@ -4,7 +4,7 @@ import data_access
 
 class RoomManager:
     def __init__(self):
-        self.room_dal = room_dal
+        self.room_dal = data_access.Room_DAL()
 
     def get_all_rooms_with_facilities(self) -> list[str]:
         rooms = self.room_dal.get_all_rooms_with_facilities()

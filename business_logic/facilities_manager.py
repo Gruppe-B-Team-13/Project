@@ -1,8 +1,9 @@
 import model
+import data_access
 
 class FacilityManager:
     def __init__(self):
-        self.__facilities = []
+        self.__facilities_dal = data_access.Facilities_DAL()
 
 
     def add_facility(self, facility: model.Facility):

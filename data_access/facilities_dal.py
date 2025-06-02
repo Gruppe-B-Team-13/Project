@@ -1,9 +1,9 @@
 from data_access.base_dal import BaseDataAccess
-from model.facilities import Facility
+import model
 
 class Facilities_DAL(BaseDataAccess):
-    def __init__(self):
-        self.connection = DatabaseConnection().connect()
+    def __init__(self, db_path: str = None):
+        super().__init__(db_path)
 
     def get_all_facilities(self):
         cursor = self.connection.cursor()

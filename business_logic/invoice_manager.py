@@ -1,9 +1,9 @@
-from datetime import date
-from model.invoice import Invoice
+import model
+import data_access
 
 class InvoiceManager:
-    def __init__(self, invoice_dal):
-        self.invoice_dal = invoice_dal
+    def __init__(self):
+        self.invoice_dal = data_access.invoice_dal
 
     def create_invoice_from_booking(self, booking) -> int:
         """

@@ -1,8 +1,9 @@
 import model
+import data_access
 
 class BookingManager:
     def __init__(self):
-        self.__bookings = []
+        self.__booking_dal = data_access.Booking_DAL()
 
     def add_booking(self, booking: model.Booking):
         self.__bookings.append(booking)
