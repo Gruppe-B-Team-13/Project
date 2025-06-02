@@ -1,10 +1,5 @@
 from data_access.base_dal import BaseDataAccess
-from data_access.hotel_dal import Hotel_DAL
-from data_access.room_type_dal import RoomType_DAL
-from data_access.address_dal import Address_DAL
-from model.room import Room
-from model.hotel import Hotel
-from model.facilities import Facility
+import model
 
 
 
@@ -16,7 +11,7 @@ class Room_DAL(BaseDataAccess):
         self.room_type_dal = RoomType_DAL(db_path)
         self._address_dal    = Address_DAL(db_path)
 
-    def get_room_by_id(self, room_id: int) -> Room | None:
+    def get_room_by_id(self, room_id: int) -> model.Room | None:
         if room_id is None:
             raise ValueError("room_id darf nicht None sein.")
 
@@ -37,7 +32,7 @@ class Room_DAL(BaseDataAccess):
         else:
             return None
 
-    def get_rooms_by_city_and_capacity(self, city: str, capacity: int) -> list[Room]:
+    def get_rooms_by_city_and_capacity(self, city: str, capacity: int) -> list[model.Room]:
         if not city or not city.strip():
             raise ValueError("Stadt darf nicht leer sein.")
         if capacity < 1:
@@ -70,7 +65,7 @@ class Room_DAL(BaseDataAccess):
             rooms.append(Room(room_id, room_number, price_per_night, hotel, room_type))
         return rooms
 
-    def get_all_rooms_with_facilities(self) -> list[Room]:
+    def get_all_rooms_with_facilities(self) -> list[model.Room]:
 
         sql = """
             SELECT
@@ -114,7 +109,7 @@ class Room_DAL(BaseDataAccess):
             return list(rooms_dict.values())
 
 
-    def get_rooms_by_min_guests_and_min_stars(self, min_guests: int, min_stars: int) -> list[Room]:
+    def get_rooms_by_min_guests_and_min_stars(self, min_guests: int, min_stars: int) -> list[model.Room]:
         if min_guests < 1:
             raise ValueError("Die Mindestanzahl an Gästen muss mindestens 1 sein.")
         if min_stars < 1:
@@ -150,7 +145,7 @@ class Room_DAL(BaseDataAccess):
 
         return rooms
 
-    def get_rooms_filtered(self, city:str = None, min_stars:int = None, min_guests:int = None) -> list[Room]:
+    def get_rooms_filtered(self, city:str = None, min_stars:int = None, min_guests:int = None) -> list[model.Room]:
 
         if min_stars is not None and min_stars < 1:
             raise ValueError("Mindestanzahl an Sternen muss mindestens 1 sein.")

@@ -3,7 +3,7 @@ import data_access
 
 class InvoiceManager:
     def __init__(self):
-        self.invoice_dal = data_access.invoice_dal
+        self.invoice_dal = data_access.Invoice_DAL()
 
     def create_invoice_from_booking(self, booking) -> int:
         """
