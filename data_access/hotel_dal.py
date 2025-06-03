@@ -153,3 +153,52 @@ class Hotel_DAL(BaseDataAccess):
             address = self._address_dal.get_address_by_id(address_id)
             hotels.append(model.Hotel(hotel_id, name, address, stars))
         return hotels
+
+    def remove_hotel_by_id(self, hotel_id: int) -> bool:
+        if hotel_id is None:
+            raise ValueError("hotel_id darf nicht None sein.")
+
+        sql = """
+            DELETE 
+            FROM Hotel 
+            WHERE hotel_id = ?
+        """
+        params = tuple([hotel_id])
+        rowcount, _ = self.execute(sql, params)
+        return rowcount > 0
+
+    def update_hotel_by_id(self, hotel_id: int, name: str = None, stars: int = None, address_id: int = None) -> model.Hotel | None:
+        if hotel_id is None:
+            raise ValueError("hotel_id darf nicht None sein.")
+
+        updates = []
+        params = []
+
+        if name is not None:
+            updates.append("name = ?")
+            params.append(name)
+        if stars is not None:
+            if stars < 1 or stars > 5:
+                raise ValueError("Sterne müssen zwischen 1 und 5 liegen.")
+            updates.append("stars = ?")
+            params.append(stars)
+        if address_id is not None:
+            updates.append("address_id = ?")
+            params.append(address_id)
+
+        if not updates:
+            raise ValueError("Mindestens ein Feld muss aktualisiert werden.")
+
+        sql = f"""
+            UPDATE Hotel
+            SET {', '.join(updates)}
+            WHERE hotel_id = ?
+        """
+        params.append(hotel_id)
+
+        _, rowcount = self.execute(sql, tuple(params))
+
+        if rowcount > 0:
+            return self.get_hotel_by_id(hotel_id)
+        else:
+            return None

@@ -35,3 +35,14 @@ class HotelManager:
             print(f"{hotel.name} ({hotel.stars} Sterne)")
             print(f"{addr.street} {addr.house_number}, {addr.zip_code} {addr.city}, {addr.country}")
             print("-" * 40)
+
+    def remove_hotel_by_id(self, hotel_id: int):
+        self.hotel_dal.remove_hotel_by_id(hotel_id)
+        
+    def update_hotel_by_id(self, hotel_id: int, name: str = None, stars: int = None, address_id: int = None):
+        updated_hotel = self.hotel_dal.update_hotel_by_id(hotel_id, name, stars, address_id)
+        
+        if updated_hotel:
+            print(f"Hotel erfolgreich aktualisiert: {updated_hotel.name} ({updated_hotel.stars} Sterne)")
+        else:
+            print(f"Kein Hotel mit ID {hotel_id} gefunden oder keine Änderung vorgenommen.")

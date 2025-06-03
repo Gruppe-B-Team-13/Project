@@ -3,7 +3,20 @@ import data_access
 
 class BookingManager:
     def __init__(self):
-        self.__booking_dal = data_access.Booking_DAL()
+        self.booking_dal = data_access.Booking_DAL()
+
+    def print_all_bookings(self):
+        bookings = self.booking_dal.get_all_bookings()
+
+        if not bookings:
+            print("Keine Buchungen gefunden.")
+            return
+
+        for b in bookings:
+            status = "Storniert" if b.is_cancelled else "Aktiv"
+            print(f"Buchung #{b.booking_id} | {b.guest.first_name} {b.guest.last_name} | "
+                f"{b.room.hotel} – Zimmer {b.room.room_number} | "
+                f"{b.check_in_date} bis {b.check_out_date} | {status}")
 
     def add_booking(self, booking: model.Booking):
         self.__bookings.append(booking)
@@ -11,8 +24,6 @@ class BookingManager:
     def remove_booking(self, booking: model.Booking):
         self.__bookings = [b for b in self.__bookings if b.booking_id != booking_id]
 
-    def get_all_bookings(self):
-        return self.__bookings
 
     def get_active_bookings(self):
         return [b for b in self.__bookings if not b.is_cancelled]

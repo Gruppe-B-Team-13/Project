@@ -1,4 +1,5 @@
 from datetime import date
+import model
 
 class Booking:
     def __init__(self, booking_id, check_in_date, check_out_date, booking_date, total_amount, room, guest, is_cancelled=False):
@@ -104,13 +105,13 @@ class Booking:
 
     @room.setter
     def room(self, value):
-        if not isinstance(value, Room):
+        if not isinstance(value, model.Room):
             raise TypeError("room muss ein Objekt der Klasse Room sein.")
         self.__room = value
 
     @guest.setter
     def guest(self, value):
-        if not isinstance(value, Guest):
+        if not isinstance(value, model.Guests):
             raise TypeError("guest muss ein Objekt der Klasse Guest sein.")
         self.__guest = value
 

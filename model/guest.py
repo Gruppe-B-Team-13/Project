@@ -1,3 +1,5 @@
+import model
+
 class Guests:
 
     def __init__(self, guest_id, first_name, last_name, email, phone_number, address, loyalty_points=0, booking_history=None):
@@ -67,7 +69,7 @@ class Guests:
 
     @address.setter
     def address(self, value):
-        if not isinstance(value, Address):
+        if not isinstance(value, model.Address):
             raise TypeError("Die Adresse muss ein Objekt der Klasse Address sein.")
         self.__address = value
 
