@@ -145,7 +145,7 @@ class Room_DAL(BaseDataAccess):
 
         return rooms
 
-    def get_rooms_filtered(self, city:str = None, min_stars:int = None, min_guests:int = None) -> list[model.Room]:
+    def get_rooms_filtered(self, city:str = None, min_stars:int = None, min_guests:int = None, check_in_date: str = None, check_out_date: str = None) -> list[model.Room]:
 
         if min_stars is not None and min_stars < 1:
             raise ValueError("Mindestanzahl an Sternen muss mindestens 1 sein.")
@@ -153,6 +153,8 @@ class Room_DAL(BaseDataAccess):
             raise ValueError("Mindestanzahl an Kunden muss mindestens 1 sein.")
         if city and not city.strip():
             raise ValueError("Stadt darf nicht leer sein.")
+        if (check_in_date and not check_out_date) or (check_out_date and not check_in_date):
+            raise ValueError("Sowohl Check-In- als auch Check-Out-Datum müssen gesetzt sein.")
 
         sql = """
             SELECT Room.room_id, 
@@ -171,11 +173,26 @@ class Room_DAL(BaseDataAccess):
             JOIN Room_Type
             ON Room.room_type_id = Room_Type.room_type_id
             
+            LEFT JOIN Booking 
+            ON Booking.room_id = Room.room_id AND Booking.is_cancelled = 0
+
             WHERE 1 = 1
         """
         params = []
 
-        if city:
+        if check_in_date is not None and check_out_date is not None:
+            sql += """
+            AND (
+                Booking.room_id IS NULL OR
+                NOT (
+                    ? < Booking.check_out_date AND
+                    ? > Booking.check_in_date
+                )
+            )
+            """
+        params.extend([check_out_date, check_in_date])
+
+        if city is not None:
             sql += " AND Address.city = ?"
             params.append(city)
 
@@ -187,7 +204,7 @@ class Room_DAL(BaseDataAccess):
             sql += " AND Room_Type.max_guests >= ?"
             params.append(min_guests)
 
-        sql += " ORDER BY Room.price_per_night ASC, Hotel.stars DESC"
+        sql += " Order BY Room.price_per_night ASC"
 
         results = self.fetchall(sql, (params))
         rooms: list[model.Room] = []

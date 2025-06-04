@@ -91,7 +91,7 @@ class Hotel_DAL(BaseDataAccess):
             raise ValueError("Sowohl check_in_date als auch check_out_date müssen gesetzt sein.")
 
         sql = """
-            SELECT DISTINCT Hotel.hotel_id,
+            SELECT Hotel.hotel_id,
                             Hotel.name,
                             Hotel.stars,
                             Hotel.address_id
@@ -118,7 +118,7 @@ class Hotel_DAL(BaseDataAccess):
             """
             params.extend([check_in_date, check_out_date])
 
-        if city:
+        if city is not None:
             sql += " AND Address.city = ?"
             params.append(city)
 
@@ -130,7 +130,10 @@ class Hotel_DAL(BaseDataAccess):
             sql += " AND Room_Type.max_guests >= ?"
             params.append(min_guests)
 
-        sql += " ORDER BY Hotel.stars DESC, Hotel.name ASC"
+        sql += """
+            GROUP BY Hotel.hotel_id
+            ORDER BY Hotel.stars DESC, Hotel.name ASC
+            """
 
         results = self.fetchall(sql, tuple(params))
         hotels: list[model.Hotel] = []
