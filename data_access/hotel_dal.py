@@ -205,3 +205,25 @@ class Hotel_DAL(BaseDataAccess):
             return self.get_hotel_by_id(hotel_id)
         else:
             return None
+
+    def find_hotel_by_name(self, name: str) -> model.Hotel | None:
+        sql = """
+            SELECT hotel_id, stars, address_id
+            FROM Hotel
+            WHERE name = ?
+        """
+        result = self.fetchone(sql, (name,))
+        if not result:
+            return None
+        hotel_id, stars, address_id = result
+        address = self._address_dal.get_address_by_id(address_id)
+        return model.Hotel(hotel_id, name, address, stars)
+
+    def create_hotel(self, name: str, stars: int, address_id: int) -> model.Hotel:
+        sql = """
+            INSERT INTO Hotel (name, stars, address_id)
+            VALUES (?, ?, ?)
+        """
+        hotel_id, _ = self.execute(sql, (name, stars, address_id))
+        address = self._address_dal.get_address_by_id(address_id)
+        return model.Hotel(hotel_id, name, address, stars)

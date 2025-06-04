@@ -80,3 +80,13 @@ class RoomType_DAL(BaseDataAccess):
                 filtered_rooms.append(model.Room(room_id, room_number, price_per_night, hotel, room_type))
 
         return filtered_rooms
+
+    def get_all_room_types(self) -> list[model.RoomType]:
+        sql = "SELECT room_type_id, description, max_guests, room_type_name FROM Room_Type"
+        results = self.fetchall(sql)
+        
+        room_types: list[model.RoomType] = []
+        for room_type_id, description, max_guests, room_type_name in results:
+            room_types.append(model.RoomType(room_type_id, description, max_guests, room_type_name))
+        
+        return room_types

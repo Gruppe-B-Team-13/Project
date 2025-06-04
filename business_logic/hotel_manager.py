@@ -25,3 +25,12 @@ class HotelManager:
             print(f"Hotel erfolgreich aktualisiert: {updated_hotel.name} ({updated_hotel.stars} Sterne)")
         else:
             print(f"Kein Hotel mit ID {hotel_id} gefunden oder keine Änderung vorgenommen.")
+
+    def create_hotel(self, name: str, stars: int, address_id: int) -> model.Hotel:
+        existing = self.hotel_dal.find_hotel_by_name(name)
+        if existing:
+            return existing
+        return self.hotel_dal.create_hotel(name, stars, address_id)
+
+    def find_hotel_by_name(self, name: str) -> model.Hotel | None:
+        return self.hotel_dal.find_hotel_by_name(name)
