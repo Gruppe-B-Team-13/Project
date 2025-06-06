@@ -5,21 +5,12 @@ class BookingManager:
     def __init__(self):
         self.booking_dal = data_access.Booking_DAL()
 
-    def print_all_bookings(self):
-        bookings = self.booking_dal.get_all_bookings()
+    def get_all_bookings(self) -> list[model.Booking]:
+        return self.booking_dal.get_all_bookings()
 
-        if not bookings:
-            print("Keine Buchungen gefunden.")
-            return
+    def create_booking(self, guest_id: int, room_id: int, check_in_date, check_out_date, total_amount: float, booking_date) -> model.Booking:
+        return self.booking_dal.create_booking(guest_id, room_id, check_in_date, check_out_date, total_amount, booking_date)
 
-        for b in bookings:
-            status = "Storniert" if b.is_cancelled else "Aktiv"
-            print(f"Buchung #{b.booking_id} | {b.guest.first_name} {b.guest.last_name} | "
-                f"{b.room.hotel} – Zimmer {b.room.room_number} | "
-                f"{b.check_in_date} bis {b.check_out_date} | {status}")
-
-    def add_booking(self, booking: model.Booking):
-        self.__bookings.append(booking)
 
     def remove_booking(self, booking: model.Booking):
         self.__bookings = [b for b in self.__bookings if b.booking_id != booking_id]

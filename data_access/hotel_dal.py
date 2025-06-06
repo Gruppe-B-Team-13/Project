@@ -26,58 +26,6 @@ class Hotel_DAL(BaseDataAccess):
         else:
             return None
     
-    def get_hotels_by_city(self, city: str) -> list[model.Hotel]:
-        if not city or not city.strip():
-            raise ValueError("Stadt darf nicht leer sein.")
-        
-        sql = """
-            SELECT Hotel.hotel_id,
-                Hotel.name,
-                Hotel.stars,
-                Hotel.address_id
-            FROM   Hotel
-            JOIN   Address
-            ON   Hotel.address_id = Address.address_id
-            WHERE  Address.city = ?
-        """
-        params = tuple([city])
-        result = self.fetchall(sql, (params))
-        hotels: list[model.Hotel] = []
-        
-        for hotel_id, name, stars, address_id in result:
-            address = self._address_dal.get_address_by_id(address_id)
-            hotels.append(model.Hotel(hotel_id, name, address, stars)
-            )
-        
-        return hotels
-
-    def get_hotels_by_city_and_stars(self, city: str, stars: int) -> list[model.Hotel]:
-        if not city or not city.strip():
-            raise ValueError("Stadt darf nicht leer sein.")
-        if stars < 1 or stars > 5:
-            raise ValueError("Anzahl Sterne muss zwischen 1 und 5 liegen.")
-        
-        sql = """
-            SELECT Hotel.hotel_id,
-                Hotel.name,
-                Hotel.stars,
-                Hotel.address_id
-            FROM   Hotel
-            JOIN   Address
-            ON   Hotel.address_id = Address.address_id
-            WHERE  Address.city = ? AND Hotel.stars >= ?
-        """
-        params = tuple([city, stars])
-        result = self.fetchall(sql, (params))
-        hotels: list[model.Hotel] = []
-        
-        for hotel_id, name, stars, address_id in result:
-            address = self._address_dal.get_address_by_id(address_id)
-            hotels.append(model.Hotel(hotel_id, name, address, stars)
-            )
-        
-        return hotels
-
     def get_hotels_filtered(self, city: str = None, min_stars: int = None, min_guests: int = None,
                             check_in_date: date = None, check_out_date: date = None) -> list[model.Hotel]:
 

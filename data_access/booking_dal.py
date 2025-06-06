@@ -2,26 +2,27 @@
 
 from data_access.base_dal import BaseDataAccess
 import model
+import data_access
 from datetime import date
 
 class Booking_DAL(BaseDataAccess):
     def __init__(self, db_path: str = None):
         super().__init__(db_path)
+        self._guest_dal = data_access.Guest_DAL(db_path)
+        self._room_dal = data_access.Room_DAL(db_path)
 
-    def add_booking(self, booking: model.Booking) -> int:
+    def create_booking(self, guest_id: int, room_id: int, check_in_date, check_out_date, total_amount: float, booking_date) -> model.Booking:
         sql = """
-            INSERT INTO Booking (guest_id, room_id, check_in_date, check_out_date, is_cancelled)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO Booking (guest_id, room_id, check_in_date, check_out_date, total_amount, booking_date, is_cancelled)
+            VALUES (?, ?, ?, ?, ?, ?, 0)
         """
-        params = (
-            booking.guest_id,
-            booking.room_id,
-            booking.check_in_date.isoformat(),
-            booking.check_out_date.isoformat(),
-            int(booking.is_cancelled)
-        )
-        lastrowid, _ = self.execute(sql, params)
-        return lastrowid
+        booking_id, _ = self.execute(sql, (guest_id, room_id, check_in_date, check_out_date, total_amount, booking_date))
+
+        # Hole zugehörige Objekte
+        guest = self._guest_dal.get_guest_by_id(guest_id)
+        room = self._room_dal.get_room_by_id(room_id)
+
+        return model.Booking(booking_id, check_in_date, check_out_date, booking_date, total_amount, room, guest, False)
 
     def get_booking_by_id(self, booking_id: int) -> model.Booking | None:
         sql = """
@@ -32,7 +33,7 @@ class Booking_DAL(BaseDataAccess):
         result = self.fetchone(sql, (booking_id,))
         if result:
             booking_id, guest_id, room_id, check_in_date, check_out_date, is_cancelled = result
-            return Booking(
+            return model.Booking(
                 booking_id,
                 guest_id,
                 room_id,
@@ -50,53 +51,55 @@ class Booking_DAL(BaseDataAccess):
         """
         results = self.fetchall(sql, (guest_id,))
         return [
-            Booking(bid, gid, rid, date.fromisoformat(checkin), date.fromisoformat(checkout), bool(cancelled))
+            model.Booking(bid, gid, rid, date.fromisoformat(checkin), date.fromisoformat(checkout), bool(cancelled))
             for bid, gid, rid, checkin, checkout, cancelled in results
         ]
 
     def get_all_bookings(self) -> list[model.Booking]:
         sql = """
             SELECT 
-                Booking.booking_id,
-                Booking.check_in_date,
-                Booking.check_out_date,
-                Booking.booking_date,
-                Booking.total_amount,
-                Booking.is_cancelled,
+                b.booking_id,
+                b.check_in_date,
+                b.check_out_date,
+                b.booking_date,
+                b.total_amount,
+                b.is_cancelled,
 
-                Guest.guest_id,
-                Guest.first_name,
-                Guest.last_name,
-                Guest.email,
-                Guest.phone_number,
+                g.guest_id,
+                g.first_name,
+                g.last_name,
+                g.email,
+                g.phone_number,
 
-                Address.address_id,
-                Address.street,
-                Address.house_number,
-                Address.city,
-                Address.zip_code,
-                Address.country,
+                a.address_id,
+                a.street,
+                a.house_number,
+                a.city,
+                a.zip_code,
+                a.country,
 
-                Room.room_id,
-                Room.room_number,
-                Room.price_per_night,
+                r.room_id,
+                r.room_number,
+                r.price_per_night,
 
-                Hotel.hotel_id,
-                Hotel.name,
-                Hotel.stars,
+                h.hotel_id,
+                h.name,
+                h.stars,
 
-                Room_Type.room_type_id,
-                Room_Type.description,
-                Room_Type.max_guests,
-                Room_Type.room_type_name
-            FROM Booking
-            JOIN Guest ON Booking.guest_id = Guest.guest_id
-            JOIN Address ON Guest.address_id = Address.address_id
-            JOIN Room ON Booking.room_id = Room.room_id
-            JOIN Hotel ON Room.hotel_id = Hotel.hotel_id
-            JOIN Room_Type ON Room.room_type_id = Room_Type.room_type_id
-            WHERE Booking.is_cancelled IN (0, 1)
+                rt.room_type_id,
+                rt.description,
+                rt.max_guests,
+                rt.room_type_name
+            FROM Booking b
+            JOIN Guest g ON b.guest_id = g.guest_id
+            JOIN Address a ON g.address_id = a.address_id
+            JOIN Room r ON b.room_id = r.room_id
+            JOIN Hotel h ON r.hotel_id = h.hotel_id
+            JOIN Room_Type rt ON r.room_type_id = rt.room_type_id
+            WHERE b.is_cancelled IN (0, 1)
+            ORDER BY b.booking_id ASC
         """
+
         results = self.fetchall(sql)
         bookings = []
 
@@ -110,7 +113,13 @@ class Booking_DAL(BaseDataAccess):
                 room_type_id, room_description, max_guests, room_type_name
             ) = row
 
-            booking_date = date.fromisoformat(booking_date)  # <- FIX
+            # Konvertiere Strings in echte Datumsobjekte (falls nötig)
+            if isinstance(booking_date, str):
+                booking_date = date.fromisoformat(booking_date)
+            if isinstance(check_in, str):
+                check_in = date.fromisoformat(check_in)
+            if isinstance(check_out, str):
+                check_out = date.fromisoformat(check_out)
 
             address = model.Address(address_id, street, house_number, city, zip_code, country)
             guest = model.Guests(guest_id, first_name, last_name, email, phone_number, address)
@@ -126,13 +135,12 @@ class Booking_DAL(BaseDataAccess):
                 total_amount,
                 room,
                 guest,
-                is_cancelled
+                bool(is_cancelled)
             )
+
             bookings.append(booking)
 
-
         return bookings
-
 
 
 

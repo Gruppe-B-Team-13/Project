@@ -3,22 +3,16 @@ import data_access
 
 class GuestManager:
     def __init__(self):
-        self.__guest_dal = data_access.Guest_DAL()
+        self.guest_dal = data_access.Guest_DAL()
 
-    def add_guest(self, guest: model.Guests):
-        self.__guests.append(guest)
+    def find_guest_by_name(self, first_name: str, last_name: str) -> model.Guests | None:
+        return self.guest_dal.find_guest(first_name, last_name)
 
-    def remove_guest_byid(self, guest_id: int):
-        self.__guests = [g for g in self._guests if g.guest_id != guest_id]
+    def create_guest(self, first_name: str, last_name: str, email: str, phone_number: str, address_id: int) -> model.Guests:
+        return self.guest_dal.create_guest(first_name, last_name, email, phone_number, address_id)
 
-    def get_all_guests(self):
-        return self.__guests
-
-    def find_by_id(self, guest_id: int):
-        for guest in self.__guests:
-            if guest.guest_id == guest_id:
-                return guest
-        return None
+    def get_guest_by_id(self, guest_id: int) -> model.Guests | None:
+            return self._guest_dal.get_guest_by_id(guest_id)
 
     def add_loyalty_points_to_guest(self, guest_id: int, points: int):
         guest = self.find_by_id(guest_id)
