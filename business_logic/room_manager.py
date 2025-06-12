@@ -27,7 +27,7 @@ class RoomManager:
         )
 
         for room in rooms:
-            adjusted_price = self._apply_seasonal_price(room.price_per_night, check_in_date)
+            adjusted_price = self.apply_seasonal_price(room.price_per_night, check_in_date)
             room.price_per_night = adjusted_price
 
         return rooms
@@ -40,7 +40,7 @@ class RoomManager:
 
         return self.room_dal.create_room(hotel, room_number, room_type, price_per_night)
     
-    def _apply_seasonal_price(self, base_price: float, check_in_date: date) -> float:
+    def apply_seasonal_price(self, base_price: float, check_in_date: date) -> float:
         if check_in_date.month in [6, 7, 8]:  # Hochsaison
             return round(base_price * 1.2, 2)
         elif check_in_date.month in [1, 2, 11]:  # Nebensaison

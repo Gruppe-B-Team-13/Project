@@ -9,8 +9,31 @@ class BookingManager:
     def get_all_bookings(self) -> list[model.Booking]:
         return self.booking_dal.get_all_bookings()
 
-    def create_booking(self, guest_id: int, room_id: int, check_in_date, check_out_date, total_amount: float, booking_date) -> model.Booking:
-        return self.booking_dal.create_booking(guest_id, room_id, check_in_date, check_out_date, total_amount, booking_date)
+    def create_booking(self, check_in_date: date, check_out_date: date, booking_date: date, room_id: int, guest_id: int):
+                       
+        room = self.room_dal.get_room_by_id(room_id)
+        if not room:
+            raise ValueError("Zimmer nicht gefunden.")
+
+        nights = (check_out_date - check_in_date).days
+        adjusted_price = self.apply_seasonal_price(room.price_per_night, check_in_date)
+        total_amount = adjusted_price * nights
+
+        return self.booking_dal.create_booking(
+            guest_id=guest_id,
+            room_id=room_id,
+            check_in_date=check_in_date,
+            check_out_date=check_out_date,
+            total_amount=total_amount,
+            booking_date=booking_date
+        )
+
+    def apply_seasonal_price(self, base_price: float, check_in_date: date) -> float:
+        if check_in_date.month in [6, 7, 8]:  # Hochsaison
+            return round(base_price * 1.2, 2)
+        elif check_in_date.month in [1, 2, 11]:  # Nebensaison
+            return round(base_price * 0.85, 2)
+        return base_price
 
 
     def remove_booking(self, booking: model.Booking):
