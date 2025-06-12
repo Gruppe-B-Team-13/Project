@@ -1,11 +1,4 @@
 class Address:
-    EUROPEAN_COUNTRIES = {
-        "AL", "AD", "AT", "BY", "BE", "BA", "BG", "CH", "CY", "CZ",
-        "DE", "DK", "EE", "ES", "FI", "FR", "GB", "GR", "HR", "HU",
-        "IE", "IS", "IT", "LI", "LT", "LU", "LV", "MC", "MD", "ME",
-        "MK", "MT", "NL", "NO", "PL", "PT", "RO", "RS", "RU", "SE",
-        "SI", "SK", "SM", "UA", "VA"
-    }
 
     def __init__(self, address_id, street, house_number, city, zip_code, country):
         self.__address_id = address_id
@@ -67,8 +60,6 @@ class Address:
     @country.setter
     def country(self, country):
         country = country.upper()
-        if country not in self.EUROPEAN_COUNTRIES:
-            raise ValueError(f"Ungültiger Ländercode: {country}. Die Adresse muss sich in Europa befinden und das Land mittels Ländercode angeben werden.")
         self.__country = country
 
     def __str__(self):

@@ -33,8 +33,8 @@ class Room_DAL(BaseDataAccess):
         else:
             return None
 
-## Check hotel id noch einfügen
-    def get_rooms_filtered(self, city:str = None, min_stars:int = None, min_guests:int = None, check_in_date: str = None, check_out_date: str = None, hotel_id: int = None) -> list[model.Room]:
+## Check hotel id noch einfügen, room id hinzufügen(dann get.room by id löschen), alle checks input in manager verlagern
+    def get_rooms_filtered(self, city:str = None, min_stars:int = None, min_guests:int = None, check_in_date: str = None, check_out_date: str = None, hotel_id: int = None, room_id: int = None) -> list[model.Room]:
 
         if min_stars is not None and min_stars < 1:
             raise ValueError("Mindestanzahl an Sternen muss mindestens 1 sein.")
@@ -61,6 +61,10 @@ class Room_DAL(BaseDataAccess):
         """
         params = []
 
+        if room_id is not None:
+            sql += " AND Room.room_id = ?"
+            params.append(room_id)
+            
         if hotel_id is not None:
             sql += " AND Hotel.hotel_id = ?"
             params.append(hotel_id)
@@ -112,5 +116,60 @@ class Room_DAL(BaseDataAccess):
         """
         room_id, _ = self.execute(sql, (hotel.hotel_id, room_number, room_type.room_type_id, price_per_night))
         return model.Room(room_id, room_number, price_per_night, hotel, room_type)
+    
+    def update_room_by_id(self, room_id: int, room_number: str = None, room_type_id: int = None, price_per_night: float = None) -> model.Room | None:
+        if room_id is None:
+            raise ValueError("room_id darf nicht None sein.")
+
+        updates = []
+        params = []
+
+        if room_number is not None:
+            if not room_number.strip():
+                raise ValueError("Zimmernummer darf nicht leer sein.")
+            updates.append("room_number = ?")
+            params.append(room_number.strip())
+
+        if room_type_id is not None:
+            updates.append("room_type_id = ?")
+            params.append(room_type_id)
+
+        if price_per_night is not None:
+            if price_per_night <= 0:
+                raise ValueError("Der Preis pro Nacht muss positiv sein.")
+            updates.append("price_per_night = ?")
+            params.append(price_per_night)
+
+        if not updates:
+            raise ValueError("Mindestens ein Feld muss aktualisiert werden.")
+
+        sql = f"""
+            UPDATE Room
+            SET {', '.join(updates)}
+            WHERE room_id = ?
+        """
+        params.append(room_id)
+        _, rowcount = self.execute(sql, tuple(params))
+
+        if rowcount > 0:
+            rooms = self.get_rooms_filtered(room_id=room_id)
+            return rooms[0] if rooms else None
+        else:
+            return None
+
+    def update_room_facilities(self, room_id: int, facilities: list[model.Facility]) -> None:
+        for facility in facilities:
+            self.execute("""
+                INSERT OR IGNORE INTO Room_Facilities (room_id, facility_id)
+                VALUES (?, ?)
+            """, (room_id, facility.facility_id))
+
+
+    def delete_room(self, room: model.Room):
+        sql = """
+            DELETE FROM Room
+            WHERE room_id = ?
+        """
+        self.execute(sql, (room.room_id,))
 
 

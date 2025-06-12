@@ -26,7 +26,7 @@ class Hotel_DAL(BaseDataAccess):
         else:
             return None
     
-    def get_hotels_filtered(self, city: str = None, min_stars: int = None, min_guests: int = None,
+    def get_hotels_filtered(self, city: str = None, min_stars: int = None, min_guests: int = None, room_id: int = None,
                             check_in_date: date = None, check_out_date: date = None) -> list[model.Hotel]:
 
         if min_stars is not None and min_stars < 1:
@@ -74,6 +74,10 @@ class Hotel_DAL(BaseDataAccess):
             sql += " AND Hotel.stars >= ?"
             params.append(min_stars)
 
+        if room_id is not None:
+            sql += " AND Room.room_id = ?"
+            params.append(room_id)
+            
         if min_guests is not None:
             sql += " AND Room_Type.max_guests >= ?"
             params.append(min_guests)

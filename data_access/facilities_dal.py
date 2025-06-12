@@ -41,7 +41,7 @@ class Facilities_DAL(BaseDataAccess):
             SET facility_name = ?
             WHERE facility_id = ?
         """
-        self.execute(sql, (facility.name, facility.facility_id))
+        self.execute(sql, (facility.facility_name, facility.facility_id))
 
     def delete_facility(self, facility_id: int) -> None:
         sql = """
@@ -49,3 +49,16 @@ class Facilities_DAL(BaseDataAccess):
             WHERE facility_id = ?
         """
         self.execute(sql, (facility_id,))
+
+
+    def get_facility_by_id(self, facility_id: int) -> model.Facility | None:
+        sql = """
+            SELECT facility_id, facility_name
+            FROM Facilities
+            WHERE facility_id = ?
+        """
+        result = self.fetchone(sql, (facility_id,))
+        if result:
+            facility_id, facility_name = result
+            return model.Facility(facility_id, facility_name)
+        return None

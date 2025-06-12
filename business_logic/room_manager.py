@@ -15,7 +15,7 @@ class RoomManager:
             result.append(room)
         return result
 
-    def get_filtered_rooms(self, city=None, min_stars=None, min_guests=None,check_in_date=None, check_out_date=None, hotel_id=None) -> list[model.Room]:
+    def get_filtered_rooms(self, city=None, min_stars=None, min_guests=None,check_in_date=None, check_out_date=None, hotel_id=None, room_id=None) -> list[model.Room]:
                            
         rooms = self.room_dal.get_rooms_filtered(
             city=city,
@@ -23,7 +23,8 @@ class RoomManager:
             min_guests=min_guests,
             check_in_date=check_in_date,
             check_out_date=check_out_date,
-            hotel_id=hotel_id
+            hotel_id=hotel_id,
+            room_id=room_id
         )
 
         for room in rooms:
@@ -53,3 +54,18 @@ class RoomManager:
         if check_out_date <= check_in_date:
             raise ValueError("Check-Out-Datum muss nach dem Check-In-Datum liegen.")
         return (check_out_date - check_in_date).days
+    
+    def update_room_by_id(self, room_id: int, room_number: str = None, room_type_id: int = None, price_per_night: float = None) -> model.Room | None:
+        return self.room_dal.update_room_by_id(
+            room_id=room_id,
+            room_number=room_number,
+            room_type_id=room_type_id,
+            price_per_night=price_per_night
+        )
+
+    def update_facilities_for_room(self, room_id: int, facilities: list[model.Facility]) -> None:
+        self.room_dal.update_room_facilities(room_id, facilities)
+
+    
+    def delete_room(self, room: model.Room) -> None:
+        return self.room_dal.delete_room(room)

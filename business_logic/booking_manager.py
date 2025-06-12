@@ -5,6 +5,7 @@ class BookingManager:
     def __init__(self):
         self.booking_dal = data_access.Booking_DAL()
         self.invoice_dal = data_access.Invoice_DAL()
+        self.room_dal = data_access.Room_DAL()
 
     def get_all_bookings(self) -> list[model.Booking]:
         return self.booking_dal.get_all_bookings()

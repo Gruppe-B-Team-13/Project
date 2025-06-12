@@ -24,9 +24,17 @@ class RoomType_DAL(BaseDataAccess):
             return model.RoomType(room_type_id, description, max_guests, room_type_name)
         else:
             return None
+    def get_all_room_types(self) -> list[model.RoomType]:
+        sql = """
+            SELECT room_type_id, description, max_guests, room_type_name
+            FROM Room_Type
+        """
+        results = self.fetchall(sql)
+        return [model.RoomType(room_type_id, description, max_guests, room_type_name)
+                for room_type_id, description, max_guests, room_type_name in results]
 
     def get_filtered_room_types(self, city: str = None, min_stars: int = None, min_guests: int = None,
-                                 check_in_date: date = None, check_out_date: date = None) -> list[model.Room]:
+                                 check_in_date: date = None, check_out_date: date = None, room_type_id: int = None) -> list[model.Room]:
 
         if check_in_date and check_out_date and check_in_date >= check_out_date:
             raise ValueError("Check-in-Datum muss vor dem Check-out-Datum liegen.")
@@ -64,6 +72,10 @@ class RoomType_DAL(BaseDataAccess):
             sql += " AND Room_Type.max_guests >= ?"
             params.append(min_guests)
 
+        if room_type_id is not None:
+            sql += " AND Room_Type.room_type_id = ?"
+            params.append(room_type_id)
+            
         sql += " ORDER BY Hotel.hotel_id, Room.room_type_id, Room.price_per_night ASC"
 
         results = self.fetchall(sql, tuple(params))
@@ -92,15 +104,42 @@ class RoomType_DAL(BaseDataAccess):
         room_type_id, _ = self.execute(sql, params)
         return model.RoomType(None, description, max_guests, room_type_name)
 
-    def update_room_type(self, room_type_id: int, description: str, max_guests: int, room_type_name: str) -> model.RoomType:
-        sql = """
+    def update_room_type_by_id(self, room_type_id: int, description: str = None, max_guests: int = None, room_type_name: str = None) -> model.RoomType | None:
+        if room_type_id is None:
+            raise ValueError("room_type_id darf nicht None sein.")
+
+        updates = []
+        params = []
+
+        if description is not None:
+            updates.append("description = ?")
+            params.append(description)
+        if max_guests is not None:
+            if max_guests < 1:
+                raise ValueError("max_guests muss mindestens 1 sein.")
+            updates.append("max_guests = ?")
+            params.append(max_guests)
+        if room_type_name is not None:
+            updates.append("room_type_name = ?")
+            params.append(room_type_name)
+
+        if not updates:
+            raise ValueError("Mindestens ein Feld muss aktualisiert werden.")
+
+        sql = f"""
             UPDATE Room_Type
-            SET description = ?, max_guests = ?, room_type_name = ?
+            SET {', '.join(updates)}
             WHERE room_type_id = ?
         """
-        params = tuple([description, max_guests, room_type_name, room_type_id])
-        self.execute(sql, params)
-        return model.RoomType(room_type_id, description, max_guests, room_type_name)
+        params.append(room_type_id)
+
+        _, rowcount = self.execute(sql, tuple(params))
+
+        if rowcount > 0:
+            return self.get_room_type_by_id(room_type_id)
+        else:
+            return None
+
         
     def delete_room_type(self, room_type_id: int) -> None:
         sql = """
