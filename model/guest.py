@@ -95,15 +95,5 @@ class Guests:
     def get_full_name(self):
         return f"{self.__first_name} {self.__last_name}"
 
-    def deduct_points(self, points):
-        if points > self.__loyalty_points:
-            print("Nicht genügend Treuepunkte vorhanden.")
-            return
-        self.__loyalty_points -= points
-
-    def add_points(self, points):
-        if not isinstance(points, int) or points < 0:
-            raise ValueError("Es können nur positive ganze Zahlen als Punkte hinzugefügt werden.")
-        self.__loyalty_points += points
 
 

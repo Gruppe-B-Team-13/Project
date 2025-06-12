@@ -130,23 +130,4 @@ class Booking:
             f"  Storniert: {storniert}"
         )
 
-    def cancel_booking(self):
-        self.__is_cancelled = True
 
-    def apply_loyalty_points_from_guest(self):
-        if self.applied_points <= 0:
-            print("Keine Treuepunkte verfügbar.")
-            return
-
-        used_points = self.applied_points
-        self.__guest.deduct_points(used_points)
-        self.__total_amount -= used_points
-        print(f"{used_points} Punkte verwendet. Neuer Betrag: CHF {self.__total_amount:.2f}")
-
-    def add_loyalty_points_to_guest(self):
-        if self.original_total_amount < 100:
-            print("Keine Treuepunkte hinzugefügt, da der Mindestbetrag 100 CHF beträgt.")
-            return
-        points = int(self.original_total_amount // 10)
-        self.__guest.add_points(points)
-        print(f"{points} Punkte hinzugefügt. Neuer Punktestand: {self.__guest.loyalty_points}")

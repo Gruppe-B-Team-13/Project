@@ -37,10 +37,6 @@ class BookingManager:
         return base_price
 
 
-    def remove_booking(self, booking: model.Booking):
-        self.__bookings = [b for b in self.__bookings if b.booking_id != booking_id]
-
-
     def get_active_bookings(self):
         return [b for b in self.__bookings if not b.is_cancelled]
 

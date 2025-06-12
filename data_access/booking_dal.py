@@ -211,11 +211,3 @@ class Booking_DAL(BaseDataAccess):
         _, rowcount = self.execute(sql, (booking_id,))
         return rowcount > 0
 
-    
-
-
-
-    def delete_booking(self, booking_id: int) -> bool:
-        sql = "DELETE FROM Booking WHERE booking_id = ?"
-        _, rowcount = self.execute(sql, (booking_id,))
-        return rowcount > 0
