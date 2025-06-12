@@ -26,22 +26,85 @@ class Booking_DAL(BaseDataAccess):
 
     def get_booking_by_id(self, booking_id: int) -> model.Booking | None:
         sql = """
-            SELECT booking_id, guest_id, room_id, check_in_date, check_out_date, is_cancelled
-            FROM Booking
-            WHERE booking_id = ?
+            SELECT 
+                b.booking_id,
+                b.check_in_date,
+                b.check_out_date,
+                b.booking_date,
+                b.total_amount,
+                b.is_cancelled,
+
+                g.guest_id,
+                g.first_name,
+                g.last_name,
+                g.email,
+                g.phone_number,
+
+                a.address_id,
+                a.street,
+                a.house_number,
+                a.city,
+                a.zip_code,
+                a.country,
+
+                r.room_id,
+                r.room_number,
+                r.price_per_night,
+
+                h.hotel_id,
+                h.name,
+                h.stars,
+
+                rt.room_type_id,
+                rt.description,
+                rt.max_guests,
+                rt.room_type_name
+            FROM Booking b
+            JOIN Guest g ON b.guest_id = g.guest_id
+            JOIN Address a ON g.address_id = a.address_id
+            JOIN Room r ON b.room_id = r.room_id
+            JOIN Hotel h ON r.hotel_id = h.hotel_id
+            JOIN Room_Type rt ON r.room_type_id = rt.room_type_id
+            WHERE b.booking_id = ?
         """
+
         result = self.fetchone(sql, (booking_id,))
-        if result:
-            booking_id, guest_id, room_id, check_in_date, check_out_date, is_cancelled = result
-            return model.Booking(
-                booking_id,
-                guest_id,
-                room_id,
-                date.fromisoformat(check_in_date),
-                date.fromisoformat(check_out_date),
-                bool(is_cancelled)
-            )
-        return None
+        if not result:
+            return None
+
+        (
+            booking_id, check_in, check_out, booking_date, total_amount, is_cancelled,
+            guest_id, first_name, last_name, email, phone_number,
+            address_id, street, house_number, city, zip_code, country,
+            room_id, room_number, price_per_night,
+            hotel_id, hotel_name, hotel_stars,
+            room_type_id, room_description, max_guests, room_type_name
+        ) = result
+
+        # Falls Strings → in echte date-Objekte umwandeln
+        if isinstance(check_in, str):
+            check_in = date.fromisoformat(check_in)
+        if isinstance(check_out, str):
+            check_out = date.fromisoformat(check_out)
+        if isinstance(booking_date, str):
+            booking_date = date.fromisoformat(booking_date)
+
+        address = model.Address(address_id, street, house_number, city, zip_code, country)
+        guest = model.Guests(guest_id, first_name, last_name, email, phone_number, address)
+        hotel = model.Hotel(hotel_id, hotel_name, address, hotel_stars)
+        room_type = model.RoomType(room_type_id, room_description, max_guests, room_type_name)
+        room = model.Room(room_id, room_number, price_per_night, hotel, room_type)
+
+        return model.Booking(
+            booking_id,
+            check_in,
+            check_out,
+            booking_date,
+            total_amount,
+            room,
+            guest,
+            bool(is_cancelled)
+        )
 
     def get_bookings_by_guest(self, guest_id: int) -> list[model.Booking]:
         sql = """
@@ -143,11 +206,14 @@ class Booking_DAL(BaseDataAccess):
         return bookings
 
 
-
     def cancel_booking(self, booking_id: int) -> bool:
         sql = "UPDATE Booking SET is_cancelled = 1 WHERE booking_id = ?"
         _, rowcount = self.execute(sql, (booking_id,))
         return rowcount > 0
+
+    
+
+
 
     def delete_booking(self, booking_id: int) -> bool:
         sql = "DELETE FROM Booking WHERE booking_id = ?"

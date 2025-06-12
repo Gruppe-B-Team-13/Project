@@ -15,8 +15,22 @@ class RoomManager:
             result.append(room)
         return result
 
-    def get_filtered_rooms(self, city: str = None, min_stars: int = None, min_guests: int = None, check_in_date: str = None, check_out_date: str = None, hotel_id: int = None) -> list[model.Room]:
-        return self.room_dal.get_rooms_filtered(city, min_stars, min_guests, check_in_date, check_out_date, hotel_id)
+    def get_filtered_rooms(self, city=None, min_stars=None, min_guests=None,check_in_date=None, check_out_date=None, hotel_id=None) -> list[model.Room]:
+                           
+        rooms = self.room_dal.get_rooms_filtered(
+            city=city,
+            min_stars=min_stars,
+            min_guests=min_guests,
+            check_in_date=check_in_date,
+            check_out_date=check_out_date,
+            hotel_id=hotel_id
+        )
+
+        for room in rooms:
+            adjusted_price = self._apply_seasonal_price(room.price_per_night, check_in_date)
+            room.price_per_night = adjusted_price
+
+        return rooms
 
     def create_room(self, hotel: model.Hotel, room_number: str, room_type: model.RoomType, price_per_night: float) -> model.Room:
         if not room_number:
@@ -25,4 +39,11 @@ class RoomManager:
             raise ValueError("Der Preis pro Nacht muss positiv sein.")
 
         return self.room_dal.create_room(hotel, room_number, room_type, price_per_night)
+    
+    def _apply_seasonal_price(self, base_price: float, check_in_date: date) -> float:
+        if check_in_date.month in [6, 7, 8]:  # Hochsaison
+            return round(base_price * 1.2, 2)
+        elif check_in_date.month in [1, 2, 11]:  # Nebensaison
+            return round(base_price * 0.85, 2)
+        return base_price
   

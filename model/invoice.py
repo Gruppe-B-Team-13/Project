@@ -1,7 +1,8 @@
 from datetime import date
+import model
 
 class Invoice:
-    def __init__(self, invoice_id, booking, issue_date):
+    def __init__(self, invoice_id, booking, issue_date, total_amount):
         self.invoice_id = invoice_id
         self.booking = booking
         self.issue_date = issue_date
@@ -33,7 +34,7 @@ class Invoice:
 
     @booking.setter
     def booking(self, value):
-        if not isinstance(value, Bookings):
+        if not isinstance(value, model.Booking):
             raise TypeError("booking muss ein Objekt der Klasse Bookings sein.")
         self.__booking = value
 
@@ -42,6 +43,15 @@ class Invoice:
         if not isinstance(value, date):
             raise TypeError("Das Rechnungsdatum muss im Format - date(jahr, monat, tag) - sein.")
         self.__issue_date = value
+
+    @total_amount.setter
+    def total_amount(self, value):
+        if not isinstance(value, (int, float)):
+            raise TypeError("total_amount muss eine Zahl sein.")
+        if value < 0:
+            raise ValueError("total_amount darf nicht negativ sein.")
+        self.__total_amount = float(value)
+
 
     def __str__(self):
         return (

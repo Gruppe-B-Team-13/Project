@@ -4,6 +4,7 @@ import data_access
 class BookingManager:
     def __init__(self):
         self.booking_dal = data_access.Booking_DAL()
+        self.invoice_dal = data_access.Invoice_DAL()
 
     def get_all_bookings(self) -> list[model.Booking]:
         return self.booking_dal.get_all_bookings()
@@ -28,9 +29,7 @@ class BookingManager:
     def find_bookings_by_room(self, room_id: int):
         return [b for b in self.__bookings if b.room_id == room_id]
 
-    def cancel_booking(self, booking_id: int):
-        for booking in self.__bookings:
-                if booking.booking_id == booking_id:
-                    booking.is_cancelled = True
-                    return True
-        return False
+    def cancel_booking_and_invoice(self, booking_id: int) -> bool:
+        success_booking = self.booking_dal.cancel_booking(booking_id)
+        success_invoice = self.invoice_dal.cancel_invoice_by_booking_id(booking_id)
+        return success_booking and success_invoice
