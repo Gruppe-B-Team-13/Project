@@ -1,10 +1,4 @@
-from __future__ import annotations
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from model.hotel     import Hotel
-    from model.room_type import RoomType
-    from model.facility  import Facility
+import model
 
 class Room:
     def __init__(self, room_id, room_number, price_per_night, hotel, room_type, facilities=None):
@@ -75,7 +69,7 @@ class Room:
     def facilities(self, value):
         if value is None:
             self.__facilities = []
-        elif isinstance(value, list) and all(isinstance(f, Facility) for f in value):
+        elif isinstance(value, list) and all(isinstance(f, model.Facility) for f in value):
             self.__facilities = value
         else:
             raise TypeError("facilities muss entweder None oder eine Liste von Facility-Objekten sein.")
@@ -97,4 +91,9 @@ class Room:
             f"Kapazität: {self.room_type.max_guests}, "
             f"Preis/Nacht: {self.price_per_night:.2f} CHF"
         )
+
+    def get_facility_string(self) -> str:
+        if not self.facilities:
+            return "keine Ausstattung"
+        return ", ".join(str(facility) for facility in self.facilities)
 

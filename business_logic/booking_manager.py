@@ -9,13 +9,13 @@ class BookingManager:
     def get_all_bookings(self) -> list[model.Booking]:
         return self.booking_dal.get_all_bookings()
 
-    def create_booking(self, check_in_date: date, check_out_date: date, booking_date: date, room_id: int, guest_id: int):
+    def create_booking(self, check_in_date: str, check_out_date: str, booking_date: str, room_id: int, guest_id: int):
                        
         room = self.room_dal.get_room_by_id(room_id)
         if not room:
             raise ValueError("Zimmer nicht gefunden.")
 
-        nights = (check_out_date - check_in_date).days
+        nights = self.calculate_nights(check_in_date, check_out_date)
         adjusted_price = self.apply_seasonal_price(room.price_per_night, check_in_date)
         total_amount = adjusted_price * nights
 
@@ -28,7 +28,7 @@ class BookingManager:
             booking_date=booking_date
         )
 
-    def apply_seasonal_price(self, base_price: float, check_in_date: date) -> float:
+    def apply_seasonal_price(self, base_price: float, check_in_date: str) -> float:
         if check_in_date.month in [6, 7, 8]:  # Hochsaison
             return round(base_price * 1.2, 2)
         elif check_in_date.month in [1, 2, 11]:  # Nebensaison
@@ -56,3 +56,8 @@ class BookingManager:
         success_booking = self.booking_dal.cancel_booking(booking_id)
         success_invoice = self.invoice_dal.cancel_invoice_by_booking_id(booking_id)
         return success_booking and success_invoice
+
+    def calculate_nights(self, check_in_date: str, check_out_date: str) -> int:
+        if check_out_date <= check_in_date:
+            raise ValueError("Check-Out-Datum muss nach dem Check-In-Datum liegen.")
+        return (check_out_date - check_in_date).days

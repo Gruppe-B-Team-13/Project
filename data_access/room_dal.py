@@ -10,6 +10,7 @@ class Room_DAL(BaseDataAccess):
         self._hotel_dal = data_access.Hotel_DAL(db_path)
         self._room_type_dal = data_access.RoomType_DAL(db_path)
         self._address_dal = data_access.Address_DAL(db_path)
+        self._facilities_dal = data_access.Facilities_DAL(db_path)
 
     def get_room_by_id(self, room_id: int) -> model.Room | None:
         if room_id is None:
@@ -97,7 +98,10 @@ class Room_DAL(BaseDataAccess):
         for room_id, room_number, price_per_night, hotel_id, room_type_id in results:
             hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
             room_type = self._room_type_dal.get_room_type_by_id(room_type_id)
-            rooms.append(model.Room(room_id, room_number, price_per_night, hotel, room_type))
+            facilities = self._facilities_dal.get_facilities_by_room_id(room_id)
+
+            room = model.Room(room_id, room_number, price_per_night, hotel, room_type, facilities)
+            rooms.append(room)
 
         return rooms
 

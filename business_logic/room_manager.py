@@ -40,10 +40,16 @@ class RoomManager:
 
         return self.room_dal.create_room(hotel, room_number, room_type, price_per_night)
     
-    def apply_seasonal_price(self, base_price: float, check_in_date: date) -> float:
-        if check_in_date.month in [6, 7, 8]:  # Hochsaison
+    def apply_seasonal_price(self, base_price: float, check_in_date: date =None) -> float:
+        if check_in_date is None:
+            return base_price
+        elif check_in_date.month in [6, 7, 8]:  # Hochsaison
             return round(base_price * 1.2, 2)
         elif check_in_date.month in [1, 2, 11]:  # Nebensaison
             return round(base_price * 0.85, 2)
         return base_price
   
+    def calculate_nights(self, check_in_date: str, check_out_date: str) -> int:
+        if check_out_date <= check_in_date:
+            raise ValueError("Check-Out-Datum muss nach dem Check-In-Datum liegen.")
+        return (check_out_date - check_in_date).days

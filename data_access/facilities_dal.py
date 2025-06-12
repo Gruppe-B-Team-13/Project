@@ -19,13 +19,18 @@ class Facilities_DAL(BaseDataAccess):
             facilities.append(facility)
         return facilities
 
-    def get_facility_by_id(self, facility_id):
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT facility_id, facility_name FROM Facilities WHERE facility_id = ?", (facility_id,))
-        row = cursor.fetchone()
-        if row:
-            return Facility(
-                facility_id=row[0],
-                facility_name=row[1]
-            )
-        return None
+
+    def get_facilities_by_room_id(self, room_id: int) -> list[model.Facility]:
+        sql = """
+            SELECT Facilities.facility_id, Facilities.facility_name
+
+            FROM Facilities
+
+            JOIN Room_Facilities 
+            
+            ON Facilities.facility_id = Room_Facilities.facility_id
+
+            WHERE Room_Facilities.room_id = ?
+        """
+        results = self.fetchall(sql, (room_id,))
+        return [model.Facility(facility_id, name) for facility_id, name in results]
