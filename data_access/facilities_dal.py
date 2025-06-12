@@ -5,20 +5,13 @@ class Facilities_DAL(BaseDataAccess):
     def __init__(self, db_path: str = None):
         super().__init__(db_path)
 
-    def get_all_facilities(self):
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT facility_id, facility_name FROM Facilities")
-        rows = cursor.fetchall()
-
-        facilities = []
-        for row in rows:
-            facility = Facilities(
-                facility_id=row[0],
-                facility_name=row[1]
-            )
-            facilities.append(facility)
-        return facilities
-
+    def get_all_facilities(self) -> list[model.Facility]:
+        sql = """
+            SELECT facility_id, facility_name
+            FROM Facilities
+        """
+        results = self.fetchall(sql)
+        return [model.Facility(facility_id, name) for facility_id, name in results]
 
     def get_facilities_by_room_id(self, room_id: int) -> list[model.Facility]:
         sql = """
@@ -34,3 +27,25 @@ class Facilities_DAL(BaseDataAccess):
         """
         results = self.fetchall(sql, (room_id,))
         return [model.Facility(facility_id, name) for facility_id, name in results]
+
+    def create_facility(self, facility: model.Facility) -> None:
+        sql = """
+            INSERT INTO Facilities
+            VALUES (?, ?)
+        """
+        self.execute(sql, (facility.facility_id, facility.name))
+    
+    def update_facility(self, facility: model.Facility) -> None:
+        sql = """
+            UPDATE Facilities
+            SET facility_name = ?
+            WHERE facility_id = ?
+        """
+        self.execute(sql, (facility.name, facility.facility_id))
+
+    def delete_facility(self, facility_id: int) -> None:
+        sql = """
+            DELETE FROM Facilities
+            WHERE facility_id = ?
+        """
+        self.execute(sql, (facility_id,))

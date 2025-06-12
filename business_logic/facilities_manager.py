@@ -6,20 +6,17 @@ class FacilityManager:
         self.__facilities_dal = data_access.Facilities_DAL()
 
 
-    def add_facility(self, facility: model.Facility):
-        self.__facilities.append(facility)
-
-    def remove_facility_by_id(self, facility_id):
-        self.__facilities = [f for f in self.__facilities if f.facility_id != facility_id]
-    
     def get_all_facilities(self):
-        return self.__facilities
+        return self.__facilities_dal.get_all_facilities()
+    
+    def get_facilities_by_room_id(self, room_id):
+        return self.__facilities_dal.get_facilities_by_room_id(room_id)
 
-    def find_by_name(self, name: str):
-        return [f for f in self.__facilities if name.lower() in f.facility_name.lower()]
+    def create_facility(self, facility: model.Facility) -> model.Facility:
+        return self.__facilities_dal.create_facility(facility)
 
-    def get_facility_by_id(self, facility_id: int):
-        for f in self.__facilities:
-            if f.facility_id == facility_id:
-                return f
-        return None
+    def update_facility(self, facility: model.Facility) -> model.Facility:
+        return self.__facilities_dal.update_facility(facility)
+
+    def delete_facility(self, facility_id: int) -> None:
+        return self.__facilities_dal.delete_facility(facility)

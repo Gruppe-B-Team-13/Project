@@ -81,4 +81,31 @@ class RoomType_DAL(BaseDataAccess):
 
         return filtered_rooms
 
+    def create_room_type(self, description: str, max_guests: int, room_type_name: str) -> model.RoomType:
+        sql = """
+            INSERT INTO Room_Type
+            (description, max_guests, room_type_name)
+            VALUES
+            (?, ?, ?)
+        """
+        params = tuple([description, max_guests, room_type_name])
+        room_type_id, _ = self.execute(sql, params)
+        return model.RoomType(None, description, max_guests, room_type_name)
 
+    def update_room_type(self, room_type_id: int, description: str, max_guests: int, room_type_name: str) -> model.RoomType:
+        sql = """
+            UPDATE Room_Type
+            SET description = ?, max_guests = ?, room_type_name = ?
+            WHERE room_type_id = ?
+        """
+        params = tuple([description, max_guests, room_type_name, room_type_id])
+        self.execute(sql, params)
+        return model.RoomType(room_type_id, description, max_guests, room_type_name)
+        
+    def delete_room_type(self, room_type_id: int) -> None:
+        sql = """
+            DELETE FROM Room_Type
+            WHERE room_type_id = ?
+        """
+        params = tuple([room_type_id])
+        self.execute(sql, params)

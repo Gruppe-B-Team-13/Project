@@ -14,3 +14,12 @@ class RoomTypeManager:
 
     def get_room_type_by_id(self, room_type_id: int) -> model.RoomType:
         return self.room_type_dal.get_room_type_by_id(room_type_id)
+
+    def create_room_type(self, room_type: model.RoomType) -> model.RoomType:
+        return self.room_type_dal.create_room_type(room_type)
+
+    def update_room_type(self, room_type: model.RoomType) -> model.RoomType:
+        return self.room_type_dal.update_room_type(room_type)
+
+    def delete_room_type(self, room_type_id: int) -> None:
+        self.room_type_dal.delete_room_type(room_type_id)
