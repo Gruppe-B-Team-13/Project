@@ -50,6 +50,28 @@ class Guest_DAL(BaseDataAccess):
         else:
             return None
 
+def update_first_name(self, guest_id: int, new_first_name: str) -> bool:
+    sql = "UPDATE Guest SET first_name = ? WHERE guest_id = ?"
+    _, rowcount = self.execute(sql, (new_first_name, guest_id))
+    return rowcount > 0
+
+
+def update_last_name(self, guest_id: int, new_last_name: str) -> bool:
+    sql = "UPDATE Guest SET last_name = ? WHERE guest_id = ?"
+    _, rowcount = self.execute(sql, (new_last_name, guest_id))
+    return rowcount > 0
+
+
+def update_address_id(self, guest_id: int, new_address_id: int) -> bool:
+    sql = "UPDATE Guest SET address_id = ? WHERE guest_id = ?"
+    _, rowcount = self.execute(sql, (new_address_id, guest_id))
+    return rowcount > 0
+
+def update_email(self, guest_id: int, new_email: str) -> bool:
+    sql = "UPDATE Guest SET email = ? WHERE guest_id = ?"
+    _, rowcount = self.execute(sql, (new_email, guest_id))
+    return rowcount > 0
+
 
 def update_phone_number(self, guest_id: int, new_phone_number: str) -> bool:
     sql = "UPDATE Guest SET phone_number = ? WHERE guest_id = ?"
