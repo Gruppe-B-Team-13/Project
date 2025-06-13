@@ -17,7 +17,7 @@ class GuestManager:
 
     def change_guest_phone_number(self, guest_id: int, new_phone_number: str) -> bool:
         return self.guest_dal.update_phone_number(guest_id, new_phone_number)
-            return self._guest_dal.get_guest_by_id(guest_id)
+        return self._guest_dal.get_guest_by_id(guest_id)
 
     def add_loyalty_points_to_guest(self, guest_id: int, points: int):
         guest = self.find_by_id(guest_id)
