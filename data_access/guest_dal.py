@@ -49,3 +49,9 @@ class Guest_DAL(BaseDataAccess):
             return model.Guests(guest_id, first_name, last_name, email, phone_number, address)
         else:
             return None
+
+
+def update_phone_number(self, guest_id: int, new_phone_number: str) -> bool:
+    sql = "UPDATE Guest SET phone_number = ? WHERE guest_id = ?"
+    _, rowcount = self.execute(sql, (new_phone_number, guest_id))
+    return rowcount > 0
