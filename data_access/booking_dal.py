@@ -211,3 +211,33 @@ class Booking_DAL(BaseDataAccess):
         _, rowcount = self.execute(sql, (booking_id,))
         return rowcount > 0
 
+
+    def update_check_in_date(self, booking_id: int, new_date: date) -> bool:
+        sql = "UPDATE Booking SET check_in_date = ? WHERE booking_id = ?"
+        _, rowcount = self.execute(sql, (new_date, booking_id))
+        return rowcount > 0
+
+# Änderung des Check-out-Datums
+    def update_check_out_date(self, booking_id: int, new_date: date) -> bool:
+        sql = "UPDATE Booking SET check_out_date = ? WHERE booking_id = ?"
+        _, rowcount = self.execute(sql, (new_date, booking_id))
+        return rowcount > 0
+
+# Änderung des Betrags
+    def update_total_amount(self, booking_id: int, new_amount: float) -> bool:
+        sql = "UPDATE Booking SET total_amount = ? WHERE booking_id = ?"
+        _, rowcount = self.execute(sql, (new_amount, booking_id))
+        return rowcount > 0
+
+# Änderung der Zimmer-ID (Zimmerwechsel)
+    def update_room(self, booking_id: int, new_room_id: int) -> bool:
+        sql = "UPDATE Booking SET room_id = ? WHERE booking_id = ?"
+        _, rowcount = self.execute(sql, (new_room_id, booking_id))
+        return rowcount > 0
+
+# Änderung des Gastes (z. B. Umbuchung)
+    def update_guest(self, booking_id: int, new_guest_id: int) -> bool:
+        sql = "UPDATE Booking SET guest_id = ? WHERE booking_id = ?"
+        _, rowcount = self.execute(sql, (new_guest_id, booking_id))
+        return rowcount > 0
+
