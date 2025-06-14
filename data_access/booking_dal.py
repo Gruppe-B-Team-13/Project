@@ -116,7 +116,7 @@ class Booking_DAL(BaseDataAccess):
         """
         results = self.fetchall(sql, (guest_id,))
         return [
-            model.Booking(bid, gid, rid, date.fromisoformat(checkin), date.fromisoformat(checkout), bool(cancelled))
+            model.Booking(bid, gid, rid, checkin, checkout, bool(cancelled))
             for bid, gid, rid, checkin, checkout, cancelled in results
         ]
 
