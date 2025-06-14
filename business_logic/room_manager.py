@@ -16,7 +16,17 @@ class RoomManager:
         return result
 
     def get_filtered_rooms(self, city=None, min_stars=None, min_guests=None,check_in_date=None, check_out_date=None, hotel_id=None, room_id=None) -> list[model.Room]:
-                           
+        if min_stars is not None and min_stars < 1:
+            raise ValueError("Mindestanzahl an Sternen muss mindestens 1 sein.")
+        if min_guests is not None and min_guests < 1:
+            raise ValueError("Mindestanzahl an Kunden muss mindestens 1 sein.")
+        if city and not city.strip():
+            raise ValueError("Stadt darf nicht leer sein.")
+        if (check_in_date and not check_out_date) or (check_out_date and not check_in_date):
+            raise ValueError("Sowohl Check-In- als auch Check-Out-Datum müssen gesetzt sein.")
+        if hotel_id is not None and hotel_id < 1:
+            raise ValueError("Feld hotel_id ist nicht optional.")  
+                             
         rooms = self.room_dal.get_rooms_filtered(
             city=city,
             min_stars=min_stars,
@@ -55,7 +65,10 @@ class RoomManager:
             raise ValueError("Check-Out-Datum muss nach dem Check-In-Datum liegen.")
         return (check_out_date - check_in_date).days
     
-    def update_room_by_id(self, room_id: int, room_number: str = None, room_type_id: int = None, price_per_night: float = None) -> model.Room | None:
+    def update_room_by_id(self, room_id: int, room_number: str = None, room_type_id: int = None, price_per_night: float = None) -> model.Room | None
+        if room_id is None:
+            raise ValueError("room_id darf nicht None sein.")
+            
         return self.room_dal.update_room_by_id(
             room_id=room_id,
             room_number=room_number,

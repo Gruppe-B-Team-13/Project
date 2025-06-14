@@ -8,11 +8,8 @@ class Invoice_DAL(BaseDataAccess):
         super().__init__(db_path)
         self._booking_dal = data_access.Booking_DAL(db_path)
 
-    def get_invoice_filtered(
-        self,
-        invoice_id: int = None,
-        booking_id: int = None
-    ) -> list[model.Invoice]:
+    def get_invoice_filtered(self,invoice_id: int = None, booking_id: int = None) -> list[model.Invoice]:
+
         sql = """
             SELECT invoice_id, booking_id, issue_date, total_amount
             FROM Invoice

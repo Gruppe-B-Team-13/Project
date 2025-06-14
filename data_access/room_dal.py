@@ -13,8 +13,6 @@ class Room_DAL(BaseDataAccess):
         self._facilities_dal = data_access.Facilities_DAL(db_path)
 
     def get_room_by_id(self, room_id: int) -> model.Room | None:
-        if room_id is None:
-            raise ValueError("room_id darf nicht None sein.")
 
         sql = """
             SELECT Room.room_id, Room.hotel_id, Room.room_number, Room.room_type_id, Room.price_per_night
@@ -22,30 +20,7 @@ class Room_DAL(BaseDataAccess):
             WHERE  Room.room_id = ?
         """
 
-        params = tuple([room_id])
-        result = self.fetchone(sql, params)
-
-        if result:
-            room_id, hotel_id, room_number, room_type_id, price_per_night = result
-            hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
-            room_type = self._room_type_dal.get_room_type_by_id(room_type_id)
-            return model.Room(room_id, room_number, price_per_night, hotel, room_type)
-        else:
-            return None
-
-## Check hotel id noch einfügen, room id hinzufügen(dann get.room by id löschen), alle checks input in manager verlagern
     def get_rooms_filtered(self, city:str = None, min_stars:int = None, min_guests:int = None, check_in_date: str = None, check_out_date: str = None, hotel_id: int = None, room_id: int = None) -> list[model.Room]:
-
-        if min_stars is not None and min_stars < 1:
-            raise ValueError("Mindestanzahl an Sternen muss mindestens 1 sein.")
-        if min_guests is not None and min_guests < 1:
-            raise ValueError("Mindestanzahl an Kunden muss mindestens 1 sein.")
-        if city and not city.strip():
-            raise ValueError("Stadt darf nicht leer sein.")
-        if (check_in_date and not check_out_date) or (check_out_date and not check_in_date):
-            raise ValueError("Sowohl Check-In- als auch Check-Out-Datum müssen gesetzt sein.")
-        if hotel_id is not None and hotel_id < 1:
-            raise ValueError("Feld hotel_id ist nicht optional.")
 
         sql = """
             SELECT Room.room_id, 
@@ -118,8 +93,6 @@ class Room_DAL(BaseDataAccess):
         return model.Room(room_id, room_number, price_per_night, hotel, room_type)
     
     def update_room_by_id(self, room_id: int, room_number: str = None, room_type_id: int = None, price_per_night: float = None) -> model.Room | None:
-        if room_id is None:
-            raise ValueError("room_id darf nicht None sein.")
 
         updates = []
         params = []

@@ -9,8 +9,6 @@ class RoomType_DAL(BaseDataAccess):
         self._hotel_dal = data_access.Hotel_DAL(db_path)
 
     def get_room_type_by_id(self, room_type_id: int) -> model.RoomType | None:
-        if room_type_id is None:
-            raise ValueError("room_type_id darf nicht None sein.")
 
         sql = """
             SELECT Room_Type.room_type_id, Room_Type.description, Room_Type.max_guests, Room_Type.room_type_name
@@ -25,6 +23,7 @@ class RoomType_DAL(BaseDataAccess):
         else:
             return None
     def get_all_room_types(self) -> list[model.RoomType]:
+
         sql = """
             SELECT room_type_id, description, max_guests, room_type_name
             FROM Room_Type
@@ -33,12 +32,8 @@ class RoomType_DAL(BaseDataAccess):
         return [model.RoomType(room_type_id, description, max_guests, room_type_name)
                 for room_type_id, description, max_guests, room_type_name in results]
 
-    def get_filtered_room_types(self, city: str = None, min_stars: int = None, min_guests: int = None,
-                                 check_in_date: date = None, check_out_date: date = None, room_type_id: int = None) -> list[model.Room]:
-
-        if check_in_date and check_out_date and check_in_date >= check_out_date:
-            raise ValueError("Check-in-Datum muss vor dem Check-out-Datum liegen.")
-
+    def get_filtered_room_types(self, city: str = None, min_stars: int = None, min_guests: int = None,check_in_date: date = None, check_out_date: date = None, room_type_id: int = None) -> list[model.Room]:
+                                 
         sql = """
             SELECT Room.room_id, Room.hotel_id, Room.room_number, Room.room_type_id, Room.price_per_night
             FROM Room
@@ -94,6 +89,7 @@ class RoomType_DAL(BaseDataAccess):
         return filtered_rooms
 
     def create_room_type(self, description: str, max_guests: int, room_type_name: str) -> model.RoomType:
+
         sql = """
             INSERT INTO Room_Type
             (description, max_guests, room_type_name)
@@ -105,8 +101,6 @@ class RoomType_DAL(BaseDataAccess):
         return model.RoomType(None, description, max_guests, room_type_name)
 
     def update_room_type_by_id(self, room_type_id: int, description: str = None, max_guests: int = None, room_type_name: str = None) -> model.RoomType | None:
-        if room_type_id is None:
-            raise ValueError("room_type_id darf nicht None sein.")
 
         updates = []
         params = []
@@ -142,6 +136,7 @@ class RoomType_DAL(BaseDataAccess):
 
         
     def delete_room_type(self, room_type_id: int) -> None:
+        
         sql = """
             DELETE FROM Room_Type
             WHERE room_type_id = ?

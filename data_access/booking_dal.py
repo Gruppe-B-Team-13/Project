@@ -27,45 +27,47 @@ class Booking_DAL(BaseDataAccess):
     def get_booking_by_id(self, booking_id: int) -> model.Booking | None:
         sql = """
             SELECT 
-                b.booking_id,
-                b.check_in_date,
-                b.check_out_date,
-                b.booking_date,
-                b.total_amount,
-                b.is_cancelled,
+            Booking.booking_id,
+            Booking.check_in_date,
+            Booking.check_out_date,
+            Booking.booking_date,
+            Booking.total_amount,
+            Booking.is_cancelled,
 
-                g.guest_id,
-                g.first_name,
-                g.last_name,
-                g.email,
-                g.phone_number,
+            Guest.guest_id,
+            Guest.first_name,
+            Guest.last_name,
+            Guest.email,
+            Guest.phone_number,
 
-                a.address_id,
-                a.street,
-                a.house_number,
-                a.city,
-                a.zip_code,
-                a.country,
+            Address.address_id,
+            Address.street,
+            Address.house_number,
+            Address.city,
+            Address.zip_code,
+            Address.country,
 
-                r.room_id,
-                r.room_number,
-                r.price_per_night,
+            Room.room_id,
+            Room.room_number,
+            Room.price_per_night,
 
-                h.hotel_id,
-                h.name,
-                h.stars,
+            Hotel.hotel_id,
+            Hotel.name,
+            Hotel.stars,
 
-                rt.room_type_id,
-                rt.description,
-                rt.max_guests,
-                rt.room_type_name
-            FROM Booking b
-            JOIN Guest g ON b.guest_id = g.guest_id
-            JOIN Address a ON g.address_id = a.address_id
-            JOIN Room r ON b.room_id = r.room_id
-            JOIN Hotel h ON r.hotel_id = h.hotel_id
-            JOIN Room_Type rt ON r.room_type_id = rt.room_type_id
-            WHERE b.booking_id = ?
+            Room_Type.room_type_id,
+            Room_Type.description,
+            Room_Type.max_guests,
+            Room_Type.room_type_name
+
+            FROM Booking
+            JOIN Guest ON Booking.guest_id = Guest.guest_id
+            JOIN Address ON Guest.address_id = Address.address_id
+            JOIN Room ON Booking.room_id = Room.room_id
+            JOIN Hotel ON Room.hotel_id = Hotel.hotel_id
+            JOIN Room_Type ON Room.room_type_id = Room_Type.room_type_id
+            WHERE Booking.booking_id = ?
+
         """
 
         result = self.fetchone(sql, (booking_id,))
@@ -120,47 +122,50 @@ class Booking_DAL(BaseDataAccess):
 
     def get_all_bookings(self) -> list[model.Booking]:
         sql = """
-            SELECT 
-                b.booking_id,
-                b.check_in_date,
-                b.check_out_date,
-                b.booking_date,
-                b.total_amount,
-                b.is_cancelled,
+        SELECT 
+        Booking.booking_id,
+        Booking.check_in_date,
+        Booking.check_out_date,
+        Booking.booking_date,
+        Booking.total_amount,
+        Booking.is_cancelled,
 
-                g.guest_id,
-                g.first_name,
-                g.last_name,
-                g.email,
-                g.phone_number,
+        Guest.guest_id,
+        Guest.first_name,
+        Guest.last_name,
+        Guest.email,
+        Guest.phone_number,
 
-                a.address_id,
-                a.street,
-                a.house_number,
-                a.city,
-                a.zip_code,
-                a.country,
+        Address.address_id,
+        Address.street,
+        Address.house_number,
+        Address.city,
+        Address.zip_code,
+        Address.country,
 
-                r.room_id,
-                r.room_number,
-                r.price_per_night,
+        Room.room_id,
+        Room.room_number,
+        Room.price_per_night,
 
-                h.hotel_id,
-                h.name,
-                h.stars,
+        Hotel.hotel_id,
+        Hotel.name,
+        Hotel.stars,
 
-                rt.room_type_id,
-                rt.description,
-                rt.max_guests,
-                rt.room_type_name
-            FROM Booking b
-            JOIN Guest g ON b.guest_id = g.guest_id
-            JOIN Address a ON g.address_id = a.address_id
-            JOIN Room r ON b.room_id = r.room_id
-            JOIN Hotel h ON r.hotel_id = h.hotel_id
-            JOIN Room_Type rt ON r.room_type_id = rt.room_type_id
-            WHERE b.is_cancelled IN (0, 1)
-            ORDER BY b.booking_id ASC
+        Room_Type.room_type_id,
+        Room_Type.description,
+        Room_Type.max_guests,
+        Room_Type.room_type_name
+
+        FROM Booking
+        JOIN Guest ON Booking.guest_id = Guest.guest_id
+        JOIN Address ON Guest.address_id = Address.address_id
+        JOIN Room ON Booking.room_id = Room.room_id
+        JOIN Hotel ON Room.hotel_id = Hotel.hotel_id
+        JOIN Room_Type ON Room.room_type_id = Room_Type.room_type_id
+
+        WHERE Booking.is_cancelled IN (0, 1)
+        ORDER BY Booking.booking_id ASC
+
         """
 
         results = self.fetchall(sql)
