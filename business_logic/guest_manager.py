@@ -1,5 +1,6 @@
 import model
 import data_access
+from datetime import date 
 
 class GuestManager:
     def __init__(self):
