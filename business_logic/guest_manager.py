@@ -100,13 +100,13 @@ class GuestManager:
             booking.check_out_date,
             booking.total_amount,
             booking.booking_date
-    )
+        )
 
 
 # Check-in-Datum aktualisieren (aus Sicht des Gastes)
     def update_check_in_date_for_guest(self, booking_id, guest_id, new_date):
         booking = self.booking_dal.get_booking_by_id(booking_id)
-        if booking and booking.guest_id == guest_id:
+        if booking and booking.guest.guest_id == guest_id:
             return self.booking_dal.update_check_in_date(booking_id, new_date)
         else:
             raise PermissionError("Zugriff verweigert.")
@@ -115,16 +115,16 @@ class GuestManager:
 # Check-out-Datum aktualisieren (aus Sicht des Gastes)
     def update_check_out_date_for_guest(self, booking_id, guest_id, new_date):
         booking = self.booking_dal.get_booking_by_id(booking_id)
-        if booking and booking.guest_id == guest_id:
+        if booking and booking.guest.guest_id == guest_id:
             return self.booking_dal.update_check_out_date(booking_id, new_date)
-    else:
-        raise PermissionError("Zugriff verweigert.")
+        else:
+            raise PermissionError("Zugriff verweigert.")
 
 
 # Zimmer ändern (aus Sicht des Gastes)
     def update_room_for_guest(self, booking_id, guest_id, new_room_id):
         booking = self.booking_dal.get_booking_by_id(booking_id)
-        if booking and booking.guest_id == guest_id:
+        if booking and booking.guest.guest_id == guest_id:
             return self.booking_dal.update_room(booking_id, new_room_id)
         else:
             raise PermissionError("Zugriff verweigert.")
@@ -133,7 +133,7 @@ class GuestManager:
 # Betrag ändern (aus Sicht des Gastes)
     def update_total_amount_for_guest(self, booking_id, guest_id, new_total_amount):
         booking = self.booking_dal.get_booking_by_id(booking_id)
-        if booking and booking.guest_id == guest_id:
+        if booking and booking.guest.guest_id == guest_id:
             return self.booking_dal.update_total_amount(booking_id, new_total_amount)
         else:
             raise PermissionError("Zugriff verweigert.")
@@ -142,7 +142,7 @@ class GuestManager:
 # Buchung stornieren (aus Sicht des Gastes)
     def cancel_booking_for_guest(self, booking_id, guest_id):
         booking = self.booking_dal.get_booking_by_id(booking_id)
-        if booking and booking.guest_id == guest_id:
+        if booking and booking.guest.guest_id == guest_id:
             return self.booking_dal.remove_booking(booking_id)
         else:
             raise PermissionError("Zugriff verweigert.")
