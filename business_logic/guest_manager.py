@@ -4,6 +4,7 @@ import data_access
 class GuestManager:
     def __init__(self):
         self.guest_dal = data_access.Guest_DAL()
+        self.booking_dal = data_access.Booking_DAL()
 
     def find_guest_by_name(self, first_name: str, last_name: str) -> model.Guests | None:
         return self.guest_dal.find_guest(first_name, last_name)
@@ -58,6 +59,9 @@ class GuestManager:
     def print_all_summaries(self):
         for g in self._guests:
             print(g.get_guest_summary())
+
+    def get_all_bookings(self) -> list[model.Booking]:
+        return self.booking_dal.get_all_bookings()
 
 
 
