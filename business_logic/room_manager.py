@@ -65,7 +65,7 @@ class RoomManager:
             raise ValueError("Check-Out-Datum muss nach dem Check-In-Datum liegen.")
         return (check_out_date - check_in_date).days
     
-    def update_room_by_id(self, room_id: int, room_number: str = None, room_type_id: int = None, price_per_night: float = None) -> model.Room | None
+    def update_room_by_id(self, room_id: int, room_number: str = None, room_type_id: int = None, price_per_night: float = None) -> model.Room | None:
         if room_id is None:
             raise ValueError("room_id darf nicht None sein.")
             
