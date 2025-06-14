@@ -84,3 +84,58 @@ class GuestManager:
     def get_booking_by_id(self, booking_id: int) -> model.Booking | None:
         return self.booking_dal.get_booking_by_id(booking_id)
 
+# Alle Buchungen dieses Gastes
+    def get_bookings_for_guest(self, guest_id):
+        return self.booking_dal.get_bookings_by_guest(guest_id)
+
+
+# Neue Buchung erstellen (aus Sicht des Gastes)
+    def add_booking_for_guest(self, booking):
+        if booking.guest_id is None:
+        raise ValueError("Gast-ID darf nicht leer sein.")
+        return self.booking_dal.insert_booking(booking)
+
+
+# Check-in-Datum aktualisieren (aus Sicht des Gastes)
+    def update_check_in_date_for_guest(self, booking_id, guest_id, new_date):
+        booking = self.booking_dal.get_booking_by_id(booking_id)
+        if booking and booking.guest_id == guest_id:
+        return self.booking_dal.update_check_in_date(booking_id, new_date)
+    else:
+        raise PermissionError("Zugriff verweigert.")
+
+
+# Check-out-Datum aktualisieren (aus Sicht des Gastes)
+    def update_check_out_date_for_guest(self, booking_id, guest_id, new_date):
+        booking = self.booking_dal.get_booking_by_id(booking_id)
+        if booking and booking.guest_id == guest_id:
+        return self.booking_dal.update_check_out_date(booking_id, new_date)
+    else:
+        raise PermissionError("Zugriff verweigert.")
+
+
+# Zimmer ändern (aus Sicht des Gastes)
+    def update_room_for_guest(self, booking_id, guest_id, new_room_id):
+        booking = self.booking_dal.get_booking_by_id(booking_id)
+        if booking and booking.guest_id == guest_id:
+        return self.booking_dal.update_room(booking_id, new_room_id)
+    else:
+        raise PermissionError("Zugriff verweigert.")
+
+
+# Betrag ändern (aus Sicht des Gastes)
+    def update_total_amount_for_guest(self, booking_id, guest_id, new_total_amount):
+        booking = self.booking_dal.get_booking_by_id(booking_id)
+        if booking and booking.guest_id == guest_id:
+        return self.booking_dal.update_total_amount(booking_id, new_total_amount)
+    else:
+        raise PermissionError("Zugriff verweigert.")
+
+
+# Buchung stornieren (aus Sicht des Gastes)
+    def cancel_booking_for_guest(self, booking_id, guest_id):
+        booking = self.booking_dal.get_booking_by_id(booking_id)
+        if booking and booking.guest_id == guest_id:
+        return self.booking_dal.remove_booking(booking_id)
+    else:
+        raise PermissionError("Zugriff verweigert.")
