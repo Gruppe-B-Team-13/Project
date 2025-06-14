@@ -91,9 +91,16 @@ class GuestManager:
 
 # Neue Buchung erstellen (aus Sicht des Gastes)
     def add_booking_for_guest(self, booking):
-        if booking.guest_id is None:
-        raise ValueError("Gast-ID darf nicht leer sein.")
-            return self.booking_dal.insert_booking(booking)
+        if booking.guest is None or booking.guest.guest_id is None:
+            raise ValueError("Gast-ID darf nicht leer sein.")
+        return self.booking_dal.create_booking(
+            booking.guest.guest_id,
+            booking.room.room_id,
+            booking.check_in_date,
+            booking.check_out_date,
+            booking.total_amount,
+            booking.booking_date
+    )
 
 
 # Check-in-Datum aktualisieren (aus Sicht des Gastes)
