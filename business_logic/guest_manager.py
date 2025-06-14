@@ -12,7 +12,7 @@ class GuestManager:
         return self.guest_dal.create_guest(first_name, last_name, email, phone_number, address_id)
 
     def get_guest_by_id(self, guest_id: int) -> model.Guests | None:
-        return self._guest_dal.get_guest_by_id(guest_id)
+        return self.guest_dal.get_guest_by_id(guest_id)
 
     def change_guest_first_name(self, guest_id: int, new_first_name: str) -> bool:
         return self.guest_dal.update_first_name(guest_id, new_first_name)
