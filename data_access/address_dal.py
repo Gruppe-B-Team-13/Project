@@ -42,3 +42,30 @@ class Address_DAL(BaseDataAccess):
             return model.Address(address_id, street, house_number, city, zip_code, country)
         return None
 
+
+
+    def update_street(self, address_id: int, new_street: str) -> bool:
+        sql = "UPDATE Address SET street = ? WHERE address_id = ?"
+        _, rowcount = self.execute(sql, (new_street, address_id))
+        return rowcount > 0
+
+    def update_house_number(self, address_id: int, new_house_number: str) -> bool:
+        sql = "UPDATE Address SET house_number = ? WHERE address_id = ?"
+        _, rowcount = self.execute(sql, (new_house_number, address_id))
+        return rowcount > 0
+
+    def update_zip_code(self, address_id: int, new_zip_code: str) -> bool:
+        sql = "UPDATE Address SET zip_code = ? WHERE address_id = ?"
+        _, rowcount = self.execute(sql, (new_zip_code, address_id))
+        return rowcount > 0
+
+    def update_city(self, address_id: int, new_city: str) -> bool:
+        sql = "UPDATE Address SET city = ? WHERE address_id = ?"
+        _, rowcount = self.execute(sql, (new_city, address_id))
+        return rowcount > 0
+
+    def update_country(self, address_id: int, new_country: str) -> bool:
+        sql = "UPDATE Address SET country = ? WHERE address_id = ?"
+        _, rowcount = self.execute(sql, (new_country, address_id))
+        return rowcount > 0
+
