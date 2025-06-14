@@ -2,8 +2,8 @@ import model
 import data_access
 
 class GuestManager:
-    def __init__(self, db_path: str = None):
-        self.guest_dal = data_access.Guest_DAL(db_path)
+    def __init__(self):
+        self.guest_dal = data_access.Guest_DAL()
 
     def find_guest_by_name(self, first_name: str, last_name: str) -> model.Guests | None:
         return self.guest_dal.find_guest(first_name, last_name)
