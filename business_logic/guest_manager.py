@@ -63,5 +63,20 @@ class GuestManager:
     def get_all_bookings(self) -> list[model.Booking]:
         return self.booking_dal.get_all_bookings()
 
+    def update_booking_check_in(self, booking_id: int, new_date: date) -> bool:
+        return data_access.Booking_DAL().update_check_in_date(booking_id, new_date)
+
+    def update_booking_check_out(self, booking_id: int, new_date: date) -> bool:
+        return data_access.Booking_DAL().update_check_out_date(booking_id, new_date)
+
+    def update_booking_room(self, booking_id: int, new_room_id: int) -> bool:
+        return data_access.Booking_DAL().update_room_id(booking_id, new_room_id)
+
+    def update_booking_total_amount(self, booking_id: int, new_amount: float) -> bool:
+        return data_access.Booking_DAL().update_total_amount(booking_id, new_amount)
+
+    def update_booking_cancelled(self, booking_id: int, cancelled: bool) -> bool:
+        return data_access.Booking_DAL().update_is_cancelled(booking_id, cancelled)
+
 
 
