@@ -7,7 +7,7 @@
 - Jan Wirz  
 
 ## Dokumentation
-Siehe Rojekt Wiki
+Siehe Pojekt Wiki
 
 ## User Stories
 ### Minimale User Stories
