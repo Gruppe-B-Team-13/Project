@@ -7,6 +7,7 @@ class BookingManager:
         self.booking_dal = data_access.Booking_DAL()
         self.invoice_dal = data_access.Invoice_DAL()
         self.room_dal = data_access.Room_DAL()
+        self.guest_dal = data_access.Guest_DAL()
 
     def get_all_bookings(self) -> list[model.Booking]:
         return self.booking_dal.get_all_bookings()
@@ -98,6 +99,11 @@ class BookingManager:
 
     def get_booking_by_id(self, booking_id: int) -> model.Booking | None:
         return self.booking_dal.get_booking_by_id(booking_id)
+
+# Gast über guest_id holen
+    def get_guest_by_id(self, guest_id: int):
+        return self.guest_dal.get_guest_by_id(guest_id)
+
 
 # Alle Buchungen dieses Gastes
     def get_bookings_for_guest(self, guest_id):
