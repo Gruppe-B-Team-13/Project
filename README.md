@@ -8,6 +8,8 @@
 
 ## Dokumentation
 Siehe Pojekt Wiki
+https://github.com/Gruppe-B-Team-13/Project.wiki.git
+
 
 ## User Stories
 ### Minimale User Stories
