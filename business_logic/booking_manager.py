@@ -1,5 +1,6 @@
 import model
 import data_access
+from datetime import date 
 
 class BookingManager:
     def __init__(self):
