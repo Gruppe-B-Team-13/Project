@@ -7,7 +7,63 @@
 - Jan Wirz  
 
 ## Dokumentation
-Siehe Pojekt Wiki
+Projektarbeit
+Projektarbeit Anwendungsentwicklung in Python - Hotel Reservation
+
+Mitglieder
+Ramiro Gonzalez
+Marc Stöcklin
+Jan Wirz
+Projektdokumentation · Hotel-Reservations-System
+1 · Ziel & Umfang
+Wir entwickeln ein modular aufgebautes Hotel-Reservations-System in Python, das den gesamten Buchungsprozess – von der Suche nach freien Zimmern bis zur Rechnung – abbildet.
+Der minimale Funktionsumfang richtet sich nach unseren Must-Have-User-Stories; optionale Stories fliessen ein, sobald Kernfunktionen stabil laufen.
+
+2 · Systemarchitektur
+Schicht	Zweck	Unsere Umsetzung
+Model	Abbild der Domäne als reine Python-Objekte	Klassen Hotel, Room, Booking, Invoice usw.
+Data Access Layer (DAL)	Kapselt sämtliche SQL-Befehle	Pro Entität eine eigene DAL-Klasse auf Basis BaseDataAccess
+Business Logic (Manager)	Regelt Workflows & Regeln	Manager-Klassen berechnen Saisonpreise, koordinieren Buchung ↔ Rechnung, prüfen Eingaben.
+Alle Schichten sind lose gekoppelt und via Unit-Tests isoliert prüfbar.
+
+3 · Datenbank & ER-Modell
+10 Tabellen (u. a. Hotel, Room, Booking, Invoice).
+1:n Beziehungen für Hotel→Room, Guest→Booking; n:m Beziehung Room↔Facilities über Room_Facilities.
+is_cancelled ersetzt hartes Löschen von Buchungen, damit Historie erhalten bleibt.
+Das vollständige Diagramm liegt als Hotel_Reservation_ERM.jpg im Repo.
+
+4 · User-Stories & Akzeptanzkriterien (Kurzfassung)
+Epic	Kern-Stories
+Hotel-Suche	Stadt, Sterne, Zeitraum, Kapazität filtern; Ergebnis paginiert.
+Zimmerdetails	Freie Zimmer mit Preis & Ausstattung anzeigen.
+Buchung	Zimmer buchen, Saisonpreis anwenden, Rechnung generieren, Buchung stornieren.
+Admin-CRUD	Hotels, Zimmer, Facilities, RoomTypes anlegen, bearbeiten, löschen.
+Reporting	Belegungsraten & Durchschnittsbewertung je Hotel (Review-View geplant).
+5 · Zeitplan (März – Anfang Juni)
+Phase	Outcomes
+Kick-off & Analyse	ER-Modell, Tech-Stack fixiert
+Model-Klassen	Alle Domänenobjekte inkl. Tests fertig
+DAL-Grundgerüst	BaseDataAccess, CRUD für Address, Hotel, Room
+Business-Logic I	Preisfunktion, Booking-Workflow, Invoice-Erzeugung
+Business-Logic II	Admin-CRUD, Storno-Logik, Saisonpreis UI-Hook
+User Stories	User-Stories final
+Integration & QA	Testabdeckung, Performance
+Dokumentation & Freeze	README, API-Spec, Demo-Video,
+Puffer: Eine Woche Reserve für unerwartete Bugs oder Review-Änderungen.
+
+6 · Team & Rollen
+Name	Hauptverantwortung	Nebentätigkeit
+Jan	Datenmodell, ER-Diagramm, Address / Hotel / Room DAL	Datenmigrationen
+Marc	Business-Logic (Booking, Room, Price)	
+Ramiro	Teststrategie	Dokumentation,
+Alle drei übernehmen abwechselnd Code-Reviews und User-Stories.
+
+7 · Zusammenarbeit, Kommunikation & Information
+Bereich	Tool / Praxis
+Task-Tracking	GitHub Projects; Spalten Backlog → In Progress → Code Review → Done
+Chat & Meetings	Teams-Chat, Whatsapp, Vorlesung(Coaching)
+Dokumentation	Markdown-Dateien im Repo; anschliessend in README übertragen
+Fazit: Dank klarer Rollen, regelmässiger Kommunikation und sauberer Schichtentrennung erreichen wir Anfang Juni einen stabilen Release-Kandidaten, der alle Must-Have-Stories erfüllt und erweiterbar bleibt.
 
 
 
