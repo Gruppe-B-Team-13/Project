@@ -9,7 +9,6 @@ class Booking:
         self.is_cancelled = is_cancelled
         self.booking_date = booking_date
         self.total_amount = total_amount
-        self.__original_total_amount = total_amount
         self.room = room
         self.guest = guest
 
@@ -36,18 +35,6 @@ class Booking:
     @property
     def total_amount(self):
         return self.__total_amount
-
-    @property
-    def original_total_amount(self):
-        return self.__original_total_amount
-
-    @property
-    def available_points(self):
-        return self.__guest.loyalty_points
-
-    @property
-    def applied_points(self):
-        return min(self.__total_amount, self.available_points)
 
     @property
     def room(self):

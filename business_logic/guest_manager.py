@@ -39,20 +39,6 @@ class GuestManager:
         return self.guest_dal.update_phone_number(guest_id, new_phone_number)
         
 
-    def add_loyalty_points_to_guest(self, guest_id: int, points: int):
-        guest = self.find_by_id(guest_id)
-        if guest:
-            guest.add_points (points)
-            return True
-        return False
-
-    def deduct_loyalty_points_from(self, guest_id: int, points: int):
-        guest = self.find_by_id(guest_id)
-        if guest:
-            guest.deduct_points(points)
-            return True
-        return False
-
 #Methoden zur Buchungsbearbeitung via GuestManager
 
     def find_by_email(self, email: str):

@@ -2,14 +2,14 @@ import model
 
 class Guests:
 
-    def __init__(self, guest_id, first_name, last_name, email, phone_number, address, loyalty_points=0, booking_history=None):
+    def __init__(self, guest_id, first_name, last_name, email, phone_number, address, booking_history=None):
         self.guest_id = guest_id
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.phone_number = phone_number
         self.address = address
-        self.loyalty_points = loyalty_points
+
 
     @property
     def guest_id(self):
@@ -72,12 +72,6 @@ class Guests:
         if not isinstance(value, model.Address):
             raise TypeError("Die Adresse muss ein Objekt der Klasse Address sein.")
         self.__address = value
-
-    @loyalty_points.setter
-    def loyalty_points(self, value):
-        if not isinstance(value, int) or value < 0:
-            raise ValueError("Treuepunkte müssen eine positive ganze Zahl oder 0 sein.")
-        self.__loyalty_points = value
 
     def __str__(self):
         return f"{self.__guest_id} - Name: {self.__first_name} {self.__last_name} - Email: {self.__email} - Telefonnummer: {self.__phone_number} - Adresse: {self.__address} - Treuepunkte: {self.__loyalty_points}"
