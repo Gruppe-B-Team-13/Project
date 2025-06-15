@@ -65,6 +65,55 @@ Chat & Meetings	Teams-Chat, Whatsapp, Vorlesung(Coaching)
 Dokumentation	Markdown-Dateien im Repo; anschliessend in README übertragen
 Fazit: Dank klarer Rollen, regelmässiger Kommunikation und sauberer Schichtentrennung erreichen wir Anfang Juni einen stabilen Release-Kandidaten, der alle Must-Have-Stories erfüllt und erweiterbar bleibt.
 
+2. Database
+# Relationale Datenbank
+
+Wir speichern alle Hotel-Daten in **SQLite**. Zwei Files liegen vor:
+
+| Datei | Zweck | Datensaetze (Kernausschnitt) |
+|-------|-------|------------------------------|
+| `hotel_reservation_sample(1).db` | Beispieldaten – je 5 Eintraege pro Haupttabelle, 10 Reviews | 10 Tabellen |
+| `working_db.db` | Aktive Entwicklungs-DB – identisches Schema, aber **15 Rooms** | 10 Tabellen |
+
+Die folgenden Angaben beziehen sich auf **`working_db.db`** (unsere Referenz).
+
+---
+
+## 1. Tabellenübersicht
+
+| Tabelle | Primärschlüssel | Zeilen | Kurzbeschreibung |
+|---------|-----------------|--------|------------------|
+| `Hotel`          | `hotel_id`   | 5  | Stammdaten der Hotels |
+| `Address`        | `address_id` | 5  | Strasse, Stadt usw. |
+| `Room`           | `room_id`    | 15 | Einzelne Zimmer eines Hotels |
+| `Room_Type`      | `room_type_id` | 5 | Kategorie (Suite, Doppel, …) |
+| `Facilities`     | `facility_id` | 5 | Wellness, WiFi, Parking … |
+| `Room_Facilities`| `(room_id, facility_id)` | 5 | Zuordnung Zimmer ↔ Facilities |
+| `Guest`          | `guest_id`   | 5 | Persoenliche Daten der Gaeste |
+| `Booking`        | `booking_id` | 5 | Reservierungen inkl. Storno-Flag |
+| `Invoice`        | `invoice_id` | 5 | Rechnungen pro Buchung |
+| `Review`         | `review_id`  | 10 | Sterne & Kommentar zu Hotels |
+
+---
+
+## 2. Schluessel- und Beziehungsgrafik
+
+```mermaid
+erDiagram
+    Address ||--o{ Hotel : "address_id"
+    Address ||--o{ Guest : "address_id"
+
+    Hotel ||--o{ Room : "hotel_id"
+    Room_Type ||--o{ Room : "room_type_id"
+    Room ||--o{ Booking : "room_id"
+
+    Guest ||--o{ Booking : "guest_id"
+    Booking ||--|| Invoice : "booking_id"
+
+    Facilities ||--o{ Room_Facilities : "facility_id"
+    Room ||--o{ Room_Facilities : "room_id"
+
+    Hotel ||--o{ Review : "hotel_id"
 
 
 ## User Stories
