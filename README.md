@@ -115,6 +115,104 @@ erDiagram
 
     Hotel ||--o{ Review : "hotel_id"
 
+3. Data_access
+# Datenzugriffsschicht (DAL)
+
+Wir haben jede Entitaet unseres Hotel-Reservations-Systems in eine eigene *Data Access Layer* (DAL) Klasse gekapselt. Dadurch trennen wir **Geschäftslogik** sauber von **Persistenz**, erleichtern Unit-Tests und koennen einzelne Module unabhängig erweitern.
+
+---
+
+## 1. Gemeinsame Basis
+
+### `BaseDataAccess`
+* **Verbindung & Fehlerbehandlung**  
+  - Oeffnet pro Aufruf eine frische SQLite-Verbindung und schliesst sie mit `contextlib.closing`, sodass kein Handle offen bleibt.  
+  - Rollback bei jeder `sqlite3.Error` und sauberer Commit sonst.  
+* **Datumskonverter**  
+  - Wir registrieren einen Adapter und Konverter, damit Python-`date` automatisch als `TEXT` gespeichert und beim Lesen wieder als `date` zurueckkommt. :contentReference[oaicite:0]{index=0}  
+* **Hilfsmethoden**  
+  - `fetchone`, `fetchall`, `execute` verbergen Cursor-Handling und liefern `(lastrowid, rowcount)` zurueck.
+
+---
+
+## 2. Entitaetsspezifische DALs
+
+### `Address_DAL`
+* CRUD-Methoden: `create_address`, `get_address_by_id`, `find_address`, plus **einzelne Update-Felder** (Strasse, Hausnummer, …).  
+* Rueckgabe sind stets vollstaendige `model.Address` Objekte. :contentReference[oaicite:1]{index=1}  
+
+### `Guest_DAL`
+* Erstellt oder findet Gaeste und holt deren Adresse via `Address_DAL`.  
+* Feingranulare Updates (Vorname, Nachname, Email usw.).  
+* Liefert `model.Guests` inkl. verschachtelter `Address`. :contentReference[oaicite:2]{index=2}  
+
+### `Booking_DAL`
+* Komplexe Joins holen **Gast → Adresse → Hotel → Zimmer → RoomType** in einem Rutsch.  
+* Flexible Filter:  
+  - `get_bookings_by_guest(guest_id)`  
+  - `get_all_bookings()` mit `is_cancelled`-Flag.  
+* Storniert Buchungen per `cancel_booking` oder aktualisiert einzelne Felder (Check-in/out, Betrag, Zimmer- oder Gastwechsel). :contentReference[oaicite:3]{index=3}  
+
+### `Facilities_DAL`
+* Listet alle Facilities oder jene eines bestimmten Zimmers.  
+* Einfaches CRUD auf der Tabelle `Facilities`. :contentReference[oaicite:4]{index=4}  
+
+### `Hotel_DAL`
+* Zentrale **Filter-Methode** `get_hotels_filtered(...)` kombiniert Stadt, Sterne, Gaestekapazitaet, Verfuegbarkeit (Datums-Overlap) und sortiert dynamisch.  
+* Updates validieren Sternebereich (1-5). :contentReference[oaicite:5]{index=5}  
+
+### `Room_DAL`
+* Holt ein Zimmer zusammen mit Hotel, RoomType und allen Facilities.  
+* `get_rooms_filtered(...)` nutzt dieselbe Overlap-Logik wie Hotel-Filter, damit wir nur verfuegbare Zimmer zeigen.  
+* Ermoeglicht Batch-Insert von Facilities via `update_room_facilities`. :contentReference[oaicite:6]{index=6}  
+
+### `RoomType_DAL`
+* Liefert einzelne oder gefilterte RoomTypes; der Filter gibt **je Hotel nur das guenstigste Zimmer pro RoomType** zurueck (Set-Logik mit `seen`).  
+* Validiert bei Updates, dass `max_guests ≥ 1` bleibt. :contentReference[oaicite:7]{index=7}  
+
+### `Invoice_DAL`
+* Erstellt Rechnungen auf Basis einer Buchung, zieht dabei das komplette `Booking`-Objekt via Komposition.  
+* Kann Rechnungen nach `invoice_id` oder `booking_id` filtern; Stornorechnung setzt Betrag auf Null. :contentReference[oaicite:8]{index=8}  
+
+### `Review_DAL`
+> **Status:** Datei ist aktuell unvollständig (fehlt Basisklasse & Methoden). Wir planen hier eine Bewertungs-API, die Hotel-Reviews mit Sternebewertung und Kommentar anlegt und liest. :contentReference[oaicite:9]{index=9}  
+
+---
+
+## 3. Design-Entscheidungen & Ideen
+
+| Leitgedanke | Umsetzung |
+|-------------|-----------|
+| **Modularitaet** | Pro Entitaet eine DAL-Klasse ↔ lose gekoppelt über Domain-Modelle. |
+| **Lesbarkeit** | SQL als mehrzeilige Strings, kein dynamisches Format ausser bei Filtern; Platzhalter verhindern SQL-Injection. |
+| **Testbarkeit** | Dank `BaseDataAccess` koennen wir jede Methode in einer In-Memory-DB (`sqlite3.connect(':memory:')`) unit-testen. |
+| **Performance** | Komplexe Joins reduzieren Round-Trips; Filter greifen direkt in SQL, nicht in Python. |
+| **Erweiterbarkeit** | Beim Hinzufuegen neuer Entitaeten reicht eine neue DAL-Klasse, die `BaseDataAccess` erbt. |
+
+---
+
+## 4. Typisches Nutzungsbeispiel
+
+```python
+# Zimmer suchen und buchen
+rooms = Room_DAL().get_rooms_filtered(
+    city="Zuerich",
+    min_stars=4,
+    min_guests=2,
+    check_in_date=date(2025, 7, 1),
+    check_out_date=date(2025, 7, 4)
+)
+
+if rooms:
+    guest = Guest_DAL().create_guest("Luca", "Muster", "luca@example.com", "+41 44 123 45 67", address_id=1)
+    booking = Booking_DAL().create_booking(
+        guest.guest_id,
+        rooms[0].room_id,
+        date(2025, 7, 1),
+        date(2025, 7, 4),
+        total_amount=rooms[0].price_per_night * 3,
+        booking_date=date.today()
+    )
 
 ## User Stories
 ### Minimale User Stories
