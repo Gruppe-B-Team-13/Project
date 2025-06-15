@@ -154,46 +154,171 @@ class Booking_DAL(BaseDataAccess):
         ORDER BY Booking.check_in_date ASC
     """
 
-    results = self.fetchall(sql, (guest_id,))
-    bookings = []
+        results = self.fetchall(sql, (guest_id,))
+        bookings = []
 
-    for row in results:
-        (
-            booking_id, check_in, check_out, booking_date, total_amount, is_cancelled,
-            guest_id, first_name, last_name, email, phone_number,
-            address_id, street, house_number, city, zip_code, country,
-            room_id, room_number, price_per_night,
-            hotel_id, hotel_name, hotel_stars,
-            room_type_id, room_description, max_guests, room_type_name
-        ) = row
+        for row in results:
+            (
+                booking_id, check_in, check_out, booking_date, total_amount, is_cancelled,
+                guest_id, first_name, last_name, email, phone_number,
+                address_id, street, house_number, city, zip_code, country,
+                room_id, room_number, price_per_night,
+                hotel_id, hotel_name, hotel_stars,
+                room_type_id, room_description, max_guests, room_type_name
+            ) = row
 
-        # Datumsfelder konvertieren
-        if isinstance(check_in, str): check_in = date.fromisoformat(check_in)
-        if isinstance(check_out, str): check_out = date.fromisoformat(check_out)
-        if isinstance(booking_date, str): booking_date = date.fromisoformat(booking_date)
+            # Datumsfelder konvertieren
+            if isinstance(check_in, str): check_in = date.fromisoformat(check_in)
+            if isinstance(check_out, str): check_out = date.fromisoformat(check_out)
+            if isinstance(booking_date, str): booking_date = date.fromisoformat(booking_date)
 
-        # Objekte zusammenbauen
-        address = model.Address(address_id, street, house_number, city, zip_code, country)
-        guest = model.Guests(guest_id, first_name, last_name, email, phone_number, address)
-        hotel = model.Hotel(hotel_id, hotel_name, address, hotel_stars)
-        room_type = model.RoomType(room_type_id, room_description, max_guests, room_type_name)
-        room = model.Room(room_id, room_number, price_per_night, hotel, room_type)
+            # Objekte zusammenbauen
+            address = model.Address(address_id, street, house_number, city, zip_code, country)
+            guest = model.Guests(guest_id, first_name, last_name, email, phone_number, address)
+            hotel = model.Hotel(hotel_id, hotel_name, address, hotel_stars)
+            room_type = model.RoomType(room_type_id, room_description, max_guests, room_type_name)
+            room = model.Room(room_id, room_number, price_per_night, hotel, room_type)
 
-        booking = model.Booking(
-            booking_id,
-            check_in,
-            check_out,
-            booking_date,
-            total_amount,
-            room,
-            guest,
-            bool(is_cancelled)
-        )
+            booking = model.Booking(
+                booking_id,
+                check_in,
+                check_out,
+                booking_date,
+                total_amount,
+                room,
+                guest,
+                bool(is_cancelled)
+            )
 
-        bookings.append(booking)
+            bookings.append(booking)
 
-    return bookings
+        return bookings
 
+    def get_all_bookings(self) -> list[model.Booking]:
+
+        sql = """
+            SELECT 
+            Booking.booking_id,
+            Booking.check_in_date,
+            Booking.check_out_date,
+            Booking.booking_date,
+            Booking.total_amount,
+            Booking.is_cancelled,
+            Guest.guest_id,
+            Guest.first_name,
+            Guest.last_name,
+            Guest.email,
+            Guest.phone_number,
+            Address.address_id,
+            Address.street,
+            Address.house_number,
+            Address.city,
+            Address.zip_code,
+            Address.country,
+            Room.room_id,
+            Room.room_number,
+            Room.price_per_night,
+            Hotel.hotel_id,
+            Hotel.name,
+            Hotel.stars,
+            Room_Type.room_type_id,
+            Room_Type.description,
+            Room_Type.max_guests,
+            Room_Type.room_type_name
+            FROM Booking
+
+            JOIN Guest ON Booking.guest_id = Guest.guest_id
+            JOIN Address ON Guest.address_id = Address.address_id
+            JOIN Room ON Booking.room_id = Room.room_id
+            JOIN Hotel ON Room.hotel_id = Hotel.hotel_id
+            JOIN Room_Type ON Room.room_type_id = Room_Type.room_type_id
+            WHERE Booking.is_cancelled IN (0, 1)
+            ORDER BY Booking.booking_id ASC
+            """
+
+
+
+        results = self.fetchall(sql)
+
+        bookings = []
+
+
+
+        for row in results:
+
+            (
+
+                booking_id, check_in, check_out, booking_date, total_amount, is_cancelled,
+
+                guest_id, first_name, last_name, email, phone_number,
+
+                address_id, street, house_number, city, zip_code, country,
+
+                room_id, room_number, price_per_night,
+
+                hotel_id, hotel_name, hotel_stars,
+
+                room_type_id, room_description, max_guests, room_type_name
+
+            ) = row
+
+
+
+            # Konvertiere Strings in echte Datumsobjekte (falls nötig)
+
+            if isinstance(booking_date, str):
+
+                booking_date = date.fromisoformat(booking_date)
+
+            if isinstance(check_in, str):
+
+                check_in = date.fromisoformat(check_in)
+
+            if isinstance(check_out, str):
+
+                check_out = date.fromisoformat(check_out)
+
+
+
+            address = model.Address(address_id, street, house_number, city, zip_code, country)
+
+            guest = model.Guests(guest_id, first_name, last_name, email, phone_number, address)
+
+            hotel = model.Hotel(hotel_id, hotel_name, address, hotel_stars)
+
+            room_type = model.RoomType(room_type_id, room_description, max_guests, room_type_name)
+
+            room = model.Room(room_id, room_number, price_per_night, hotel, room_type)
+
+
+
+            booking = model.Booking(
+
+                booking_id,
+
+                check_in,
+
+                check_out,
+
+                booking_date,
+
+                total_amount,
+
+                room,
+
+                guest,
+
+                bool(is_cancelled)
+
+            )
+
+
+
+            bookings.append(booking)
+
+
+
+        return bookings
 
     def cancel_booking(self, booking_id: int) -> bool:
         sql = "UPDATE Booking SET is_cancelled = 1 WHERE booking_id = ?"

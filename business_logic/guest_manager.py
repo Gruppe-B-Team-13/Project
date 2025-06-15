@@ -11,6 +11,9 @@ class GuestManager:
         return self.guest_dal.find_guest(first_name, last_name)
 
     def create_guest(self, first_name: str, last_name: str, email: str, phone_number: str, address_id: int) -> model.Guests:
+        guest = self.find_guest_by_name(first_name, last_name)
+        if guest:
+            return guest
         return self.guest_dal.create_guest(first_name, last_name, email, phone_number, address_id)
 
     def get_guest_by_id(self, guest_id: int) -> model.Guests | None:

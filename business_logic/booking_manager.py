@@ -58,3 +58,105 @@ class BookingManager:
         if check_out_date <= check_in_date:
             raise ValueError("Check-Out-Datum muss nach dem Check-In-Datum liegen.")
         return (check_out_date - check_in_date).days
+
+
+
+
+
+
+    #Methoden zur Buchungsbearbeitung via GuestManager
+
+    def find_by_email(self, email: str):
+        return [g for g in self._guests if g.email.lower() == email.lower()]
+
+    def find_by_name(self, name: str):
+        return [g for g in self._guests if g.name.lower() == name.lower()]
+
+    def print_all_summaries(self):
+        for g in self._guests:
+            print(g.get_guest_summary())
+
+    def get_all_bookings(self) -> list[model.Booking]:
+        return self.booking_dal.get_all_bookings()
+
+    
+    def update_booking_check_in(self, booking_id: int, new_date: date) -> bool:
+        return self.booking_dal.update_check_in_date(booking_id, new_date)
+
+    def update_booking_check_out(self, booking_id: int, new_date: date) -> bool:
+        return self.booking_dal.update_check_out_date(booking_id, new_date)
+
+    def update_booking_room(self, booking_id: int, new_room_id: int) -> bool:
+        return self.booking_dal.update_room_id(booking_id, new_room_id)
+
+    def update_booking_total_amount(self, booking_id: int, new_amount: float) -> bool:
+        return self.booking_dal.update_total_amount(booking_id, new_amount)
+
+    def update_booking_cancelled(self, booking_id: int, cancelled: bool) -> bool:
+        return self.booking_dal.update_is_cancelled(booking_id, cancelled)
+
+    def get_booking_by_id(self, booking_id: int) -> model.Booking | None:
+        return self.booking_dal.get_booking_by_id(booking_id)
+
+# Alle Buchungen dieses Gastes
+    def get_bookings_for_guest(self, guest_id):
+        return self.booking_dal.get_bookings_by_guest(guest_id)
+
+
+# Neue Buchung erstellen (aus Sicht des Gastes)
+    def add_booking_for_guest(self, booking):
+        if booking.guest is None or booking.guest.guest_id is None:
+            raise ValueError("Gast-ID darf nicht leer sein.")
+        return self.booking_dal.create_booking(
+            booking.guest.guest_id,
+            booking.room.room_id,
+            booking.check_in_date,
+            booking.check_out_date,
+            booking.total_amount,
+            booking.booking_date
+        )
+
+
+# Check-in-Datum aktualisieren (aus Sicht des Gastes)
+    def update_check_in_date_for_guest(self, booking_id, guest_id, new_date):
+        booking = self.booking_dal.get_booking_by_id(booking_id)
+        if booking and booking.guest.guest_id == guest_id:
+            return self.booking_dal.update_check_in_date(booking_id, new_date)
+        else:
+            raise PermissionError("Zugriff verweigert.")
+
+
+# Check-out-Datum aktualisieren (aus Sicht des Gastes)
+    def update_check_out_date_for_guest(self, booking_id, guest_id, new_date):
+        booking = self.booking_dal.get_booking_by_id(booking_id)
+        if booking and booking.guest.guest_id == guest_id:
+            return self.booking_dal.update_check_out_date(booking_id, new_date)
+        else:
+            raise PermissionError("Zugriff verweigert.")
+
+
+# Zimmer ändern (aus Sicht des Gastes)
+    def update_room_for_guest(self, booking_id, guest_id, new_room_id):
+        booking = self.booking_dal.get_booking_by_id(booking_id)
+        if booking and booking.guest.guest_id == guest_id:
+            return self.booking_dal.update_room(booking_id, new_room_id)
+        else:
+            raise PermissionError("Zugriff verweigert.")
+
+
+# Betrag ändern (aus Sicht des Gastes)
+    def update_total_amount_for_guest(self, booking_id, guest_id, new_total_amount):
+        booking = self.booking_dal.get_booking_by_id(booking_id)
+        if booking and booking.guest.guest_id == guest_id:
+            return self.booking_dal.update_total_amount(booking_id, new_total_amount)
+        else:
+            raise PermissionError("Zugriff verweigert.")
+
+
+# Buchung stornieren (aus Sicht des Gastes)
+    def cancel_booking_for_guest(self, booking_id, guest_id):
+        booking = self.booking_dal.get_booking_by_id(booking_id)
+        if booking and booking.guest.guest_id == guest_id:
+            return self.booking_dal.remove_booking(booking_id)
+        else:
+            raise PermissionError("Zugriff verweigert.")

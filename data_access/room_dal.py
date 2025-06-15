@@ -19,6 +19,18 @@ class Room_DAL(BaseDataAccess):
             FROM   Room
             WHERE  Room.room_id = ?
         """
+        result = self.fetchone(sql, (room_id,))
+
+        if result is None:
+            return None
+
+        room_id, hotel_id, room_number, room_type_id, price_per_night = result
+        hotel = self._hotel_dal.get_hotel_by_id(hotel_id)
+        room_type = self._room_type_dal.get_room_type_by_id(room_type_id)
+        facilities = self._facilities_dal.get_facilities_by_room_id(room_id)
+
+        room = model.Room(room_id, room_number, price_per_night, hotel, room_type, facilities)
+        return room
 
     def get_rooms_filtered(self, city:str = None, min_stars:int = None, min_guests:int = None, check_in_date: str = None, check_out_date: str = None, hotel_id: int = None, room_id: int = None) -> list[model.Room]:
 
