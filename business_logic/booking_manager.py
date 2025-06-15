@@ -12,7 +12,7 @@ class BookingManager:
         return self.booking_dal.get_all_bookings()
 
     def create_booking(self, check_in_date: str, check_out_date: str, booking_date: str, room_id: int, guest_id: int):
-                       
+                   
         room = self.room_dal.get_room_by_id(room_id)
         if not room:
             raise ValueError("Zimmer nicht gefunden.")
@@ -65,7 +65,7 @@ class BookingManager:
 
 
 
-    #Methoden zur Buchungsbearbeitung via GuestManager
+    #Methoden zur Buchungsbearbeitung 
 
     def find_by_email(self, email: str):
         return [g for g in self._guests if g.email.lower() == email.lower()]
